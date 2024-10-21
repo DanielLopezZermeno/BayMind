@@ -1,0 +1,3 @@
+# Aqui podemos usar los modelos de datos 
+# tanto en el front como en el backend
+# como usuario, estado de ánimo, etc.

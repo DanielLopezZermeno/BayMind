@@ -1,0 +1,2 @@
+#Contendra componentes reutilizables de la UI,
+# como botones, cuadros de texto, listas, etc.

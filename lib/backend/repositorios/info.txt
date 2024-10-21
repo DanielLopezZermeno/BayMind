@@ -1,0 +1,3 @@
+# Aqui se puede manejar la lógica como 
+# recuperacion de datos desde APIs o 
+# almacenamiento local.

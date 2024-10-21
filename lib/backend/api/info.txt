@@ -1,0 +1,2 @@
+# Aqui podemos gestionar las conexiones con 
+#backend, ya sea Node.js, Firebase, etc.
