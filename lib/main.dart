@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'Flutter Button Example',
+      title: 'Inicio',
       home: MyHomePage(),
     );
   }
@@ -24,7 +24,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _title = 'Button with Action';
+  String _title = 'Button con acción';
   int x=0;
   void _changeTitle() {
     setState(() {
