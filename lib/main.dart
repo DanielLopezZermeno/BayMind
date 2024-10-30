@@ -1,3 +1,6 @@
+import 'package:baymind/frontend/pantallas/cuestionario_screen.dart';
+import 'package:baymind/frontend/pantallas/home_screen.dart';
+import 'package:baymind/frontend/pantallas/scroll_design.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,57 +12,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Inicio',
-      home: MyHomePage(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Material App',
+      initialRoute: 'scroll_screen',
+      routes: {
+        'scroll_screen': ( _ ) => ScrollScreen(),
+        'cuestionario_screen': ( _ ) => CuestionarioScreen(),
+        'home_screen': ( _ ) => HomeScreen(),
+
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  String _title = 'Button con acción';
-  int x=0;
-  void _changeTitle() {
-    setState(() {
-       x++;
-      _title = '¡Título cambiado! $x veces';
-    });
-  }
-  void _restarTitle(){
-    setState((){
-      x--;
-      _title = '¡Título cambiado! $x veces';
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_title),
-      ),
-      body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: _changeTitle,
-              child: const Text('Sumar'),
-            ),
-            ElevatedButton(
-              onPressed: _restarTitle,
-              child: const Text('Restar'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
