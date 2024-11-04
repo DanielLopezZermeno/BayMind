@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  intl: ^0.18.0 # Asegúrate de usar una versión compatible (esto es solo un ejemplo)
+
 
 dev_dependencies:
   flutter_test:

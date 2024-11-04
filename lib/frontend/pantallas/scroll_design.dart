@@ -36,7 +36,7 @@ class page1 extends StatelessWidget {
 class MainContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var textStyle = TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.white);
+    //var textStyle = TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.white);
     
     return SafeArea(
       bottom: false,
