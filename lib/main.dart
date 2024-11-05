@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Material App',
-      initialRoute: 'estado_screen',
+      initialRoute: 'calendario_screen',
       routes: {
         'scroll_screen': ( _ ) => ScrollScreen(),
         'cuestionario_screen': ( _ ) => CuestionarioScreen(),

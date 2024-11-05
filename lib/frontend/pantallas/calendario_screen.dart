@@ -2,7 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:baymind/frontend/widgets/registro_card.dart';
 
-class CalendarioScreen extends StatelessWidget {
+
+class CalendarioScreen extends StatefulWidget {
+  @override
+  _CalendarioScreenState createState() => _CalendarioScreenState();
+}
+class _CalendarioScreenState extends State<CalendarioScreen> {
   final List<Map<String, dynamic>> weekDays = [
     {'dayName': 'Mon', 'dayNumber': '10', 'month': 'Jun'},
     {'dayName': 'Tue', 'dayNumber': '11', 'month': 'Jun'},
@@ -12,6 +17,23 @@ class CalendarioScreen extends StatelessWidget {
     {'dayName': 'Sat', 'dayNumber': '15', 'month': 'Jun'},
     {'dayName': 'Sun', 'dayNumber': '16', 'month': 'Jun'},
   ];
+ late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+
+    // Desplazarse al final del ListView al cargar
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    });
+  }
+   @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +45,13 @@ class CalendarioScreen extends StatelessWidget {
         actions: [
           // Aquí agregamos el ícono en el lado derecho
           Padding(
-            padding: const EdgeInsets.only(right: 16.0), // Espaciado a la derecha
+            padding: const EdgeInsets.only(right: 32.0, top: 32), // Espaciado a la derecha
             child: Icon(Icons.calendar_today_rounded),
           ),
         ],
       ),
       body: Container(
+        padding: const EdgeInsets.only(top: 42),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.purple.withOpacity(0.1), Colors.white],
@@ -38,63 +61,89 @@ class CalendarioScreen extends StatelessWidget {
         ),
         child: Column(
           children: [
-            SizedBox(height: 18),
+            
             Expanded(
               child: ListView.builder(
+                controller: _scrollController,
                 scrollDirection: Axis.horizontal,
                 itemCount: weekDays.length,
+                
                 itemBuilder: (context, index) {
                   final day = weekDays[index];
                   return RegistroCard(
                     dayName: day['dayName'],
                     month: day['month'],
                     dayNumber: day['dayNumber'],
-                    isToday: index == 1, // Muestra el segundo día como "hoy"
+                    isToday: index == weekDays.length-1, // Muestra el segundo día como "hoy"
                   );
                 },
               ),
             ),
-            SizedBox(height: 90),
+            SizedBox(height: 120),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home), 
-            label: 'Inicio',
+      bottomNavigationBar: Stack(
+        clipBehavior: Clip.none, // Permite que el botón sobresalga
+        children: [
+          BottomNavigationBar(
+            currentIndex: 1,
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Inicio',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.calendar_today),
+                label: 'Registros',
+              ),
+              BottomNavigationBarItem(
+                icon: SizedBox.shrink(), // Espacio reservado para el botón "BayMind"
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.lightbulb),
+                label: 'Avance',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Perfil',
+              ),
+            ],
+            selectedItemColor: Colors.purple,
+            unselectedItemColor: Colors.grey,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today), 
-            label: 'Registros',
-          ),
-          BottomNavigationBarItem(
-            icon: ClipRRect( // Usar ClipRRect para redondear bordes
-              borderRadius: BorderRadius.circular(20), // Ajusta el radio según sea necesario
+          Positioned(
+            bottom: 20, // Ajusta esta posición según lo necesites
+            left: MediaQuery.of(context).size.width / 2 - 22, // Centrado horizontal
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(40),
               child: Container(
-                width: 40, // Ajusta el ancho del logo según sea necesario
-                height: 40, // Ajusta la altura del logo según sea necesario
-                child: Image(
-                  image: AssetImage('assets/baymind.jpg'), // Reemplaza 'baymind.jpg' con tu imagen correcta
-                  fit: BoxFit.cover, // Ajusta el modo de ajuste de la imagen
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: FloatingActionButton(
+                  backgroundColor: Colors.white,
+                  onPressed: () {
+                    // Acción del botón BayMind
+                  },
+                  child: Image.asset(
+                    'assets/baymind.jpg', // Asegúrate de que esta ruta es correcta
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-            label: 'BayMind',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lightbulb), 
-            label: 'Avance',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person), 
-            label: 'Perfil',
           ),
         ],
-
-        selectedItemColor: Colors.purple,
-        unselectedItemColor: Colors.grey,
       ),
     );
   }
