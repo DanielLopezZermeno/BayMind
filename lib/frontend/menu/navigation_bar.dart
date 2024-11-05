@@ -63,7 +63,7 @@ class CustomNavigationBar extends StatelessWidget {
               child: FloatingActionButton(
                 backgroundColor: Colors.white,
                 onPressed: () {
-                  // Acción del botón BayMind
+                  onTap(2); // Invoca onTap con el índice de BaymindScreen
                 },
                 child: Image.asset(
                   'assets/baymind.jpg', // Asegúrate de que esta ruta es correcta

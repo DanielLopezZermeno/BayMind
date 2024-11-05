@@ -386,6 +386,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(child: Divider(thickness: 1, color: Colors.black)),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text("o", style: TextStyle(fontSize: 20)),
+                          ),
+                          Expanded(child: Divider(thickness: 1, color: Colors.black)),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('¿Ya tienes cuenta?', style: TextStyle(fontSize: 14, color: Colors.black)),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => LoginScreen()), // Cambiar a RegisterScreen
+                                );
+                              },
+                              child: Text('Iniciar sesion', style: TextStyle(color: Colors.blue, fontSize: 14)),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),

@@ -1,3 +1,4 @@
+import 'package:baymind/frontend/pantallas/Baymind.dart';
 import 'package:baymind/frontend/pantallas/calendario_screen.dart';
 import 'package:baymind/frontend/pantallas/avance_screen.dart';
 import 'package:baymind/frontend/pantallas/perfil_screen.dart';
@@ -27,12 +28,12 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
+  int _currentIndex = 2;
 
   final List<Widget> _screens = [
     HomeScreen(),
     CalendarioScreen(),
-    SizedBox.shrink(), // Espacio reservado para el botón "BayMind"
+    BaymindScreen(),
     AvanceScreen(),
     PerfilScreen(),
   ];
