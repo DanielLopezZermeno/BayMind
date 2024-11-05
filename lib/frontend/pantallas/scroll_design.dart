@@ -1,6 +1,6 @@
 import 'package:baymind/frontend/pantallas/cuestionario_screen.dart';
+import 'package:baymind/main.dart';
 import 'package:flutter/material.dart';
-import 'package:baymind/frontend/pantallas/home_screen.dart';
 
 class ScrollScreen extends StatelessWidget {
   @override
@@ -10,9 +10,9 @@ class ScrollScreen extends StatelessWidget {
         scrollDirection: Axis.vertical,
         itemBuilder: (context, index) {
           if (index == 0) {
-            return page1();
+            return Page1();
           } else {
-            return LoginScreen();
+            return LoginScreen(); // Navegación a LoginScreen
           }
         },
         itemCount: 2,
@@ -21,7 +21,7 @@ class ScrollScreen extends StatelessWidget {
   }
 }
 
-class page1 extends StatelessWidget {
+class Page1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -36,8 +36,6 @@ class page1 extends StatelessWidget {
 class MainContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //var textStyle = TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.white);
-    
     return SafeArea(
       bottom: false,
       child: Column(
@@ -177,9 +175,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.push(
+                            // Redirigir a la pantalla principal al iniciar sesión
+                            Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => HomeScreen()),
+                              MaterialPageRoute(builder: (context) => MainScreen()), // Cambiar a MainScreen
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -221,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => RegisterScreen()),
+                                  MaterialPageRoute(builder: (context) => RegisterScreen()), // Cambiar a RegisterScreen
                                 );
                               },
                               child: Text('Registrar', style: TextStyle(color: Colors.blue, fontSize: 14)),
@@ -253,7 +252,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-
 
   @override
   Widget build(BuildContext context) {
@@ -295,18 +293,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       Text('Registrar', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black)),
                       SizedBox(height: 20),
+                      Text('Correo', style: TextStyle(fontSize: 16, color: Colors.black)),
+                      SizedBox(height: 8),
                       TextField(
                         controller: _emailController,
                         decoration: InputDecoration(
                           prefixIcon: Icon(Icons.mail),
-                          hintText: 'ejemplo@gmail.com',
+                          hintText: 'correo@gmail.com',
                           hintStyle: TextStyle(color: Colors.grey),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           filled: true,
                           fillColor: Colors.white.withOpacity(0.7),
                         ),
                       ),
                       SizedBox(height: 20),
+                      Text('Contraseña', style: TextStyle(fontSize: 16, color: Colors.black)),
+                      SizedBox(height: 8),
                       TextField(
                         controller: _passwordController,
                         obscureText: !_isPasswordVisible,
@@ -322,12 +326,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           hintText: 'Contraseña',
                           hintStyle: TextStyle(color: Colors.grey),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           filled: true,
                           fillColor: Colors.white.withOpacity(0.7),
                         ),
                       ),
                       SizedBox(height: 20),
+                      Text('Confirmar Contraseña', style: TextStyle(fontSize: 16, color: Colors.black)),
+                      SizedBox(height: 8),
                       TextField(
                         controller: _confirmPasswordController,
                         obscureText: !_isConfirmPasswordVisible,
@@ -343,7 +351,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           hintText: 'Confirmar contraseña',
                           hintStyle: TextStyle(color: Colors.grey),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           filled: true,
                           fillColor: Colors.white.withOpacity(0.7),
                         ),
@@ -352,6 +362,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Container(
                         width: double.infinity,
                         height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          gradient: LinearGradient(
+                            colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
+                          ),
+                        ),
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.push(
@@ -360,38 +376,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                           child: Text('Registrar', style: TextStyle(fontSize: 18, color: Colors.white)),
                         ),
                       ),
-                       SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Expanded(child: Divider(thickness: 1, color: Colors.black)),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text("o", style: TextStyle(fontSize: 20)),
-                          ),
-                          Expanded(child: Divider(thickness: 1, color: Colors.black)),
-                        ],
-                      ),
                       SizedBox(height: 20),
-                      Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('¿Ya tienes cuenta?', style: TextStyle(fontSize: 14, color: Colors.black)),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text('Iniciar Sesión', style: TextStyle(color: Colors.blue, fontSize: 14)),
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),

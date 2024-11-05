@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 
-class HomeScreen extends StatelessWidget {
+class PerfilScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('Hola Mundo: Pantalla HOME'),
+        child: Text('Hola Mundo. Pantalla PERFIL'),
       ),
     );
   }

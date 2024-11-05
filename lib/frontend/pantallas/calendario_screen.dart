@@ -83,68 +83,7 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: Stack(
-        clipBehavior: Clip.none, // Permite que el botón sobresalga
-        children: [
-          BottomNavigationBar(
-            currentIndex: 1,
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Inicio',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_today),
-                label: 'Registros',
-              ),
-              BottomNavigationBarItem(
-                icon: SizedBox.shrink(), // Espacio reservado para el botón "BayMind"
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.lightbulb),
-                label: 'Avance',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Perfil',
-              ),
-            ],
-            selectedItemColor: Colors.purple,
-            unselectedItemColor: Colors.grey,
-          ),
-          Positioned(
-            bottom: 20, // Ajusta esta posición según lo necesites
-            left: MediaQuery.of(context).size.width / 2 - 22, // Centrado horizontal
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(40),
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: FloatingActionButton(
-                  backgroundColor: Colors.white,
-                  onPressed: () {
-                    // Acción del botón BayMind
-                  },
-                  child: Image.asset(
-                    'assets/baymind.jpg', // Asegúrate de que esta ruta es correcta
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+      
     );
   }
 }

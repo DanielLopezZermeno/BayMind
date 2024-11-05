@@ -1,3 +1,5 @@
+import 'package:baymind/frontend/pantallas/home_screen.dart';
+import 'package:baymind/main.dart';
 import 'package:flutter/material.dart';
 
 class CuestionarioScreen extends StatefulWidget {
@@ -162,7 +164,11 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
-                    // Acción para continuar
+                  // Redirigir a la pantalla principal al registrarse
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => MainScreen()), // Cambiar a MainScreen
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent, // Fondo transparente
