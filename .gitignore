@@ -10,6 +10,13 @@
 .svn/
 migrate_working_dir/
 
+#Dependencias servidor
+**/lib/backend/api/node_modules
+**/lib/backend/api/package-lock.json
+
+#Variables locales
+**/lib/backend/api/.env
+
 # IntelliJ related
 *.iml
 *.ipr
