@@ -79,6 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,11 +175,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         child: ElevatedButton(
-                          onPressed: () {
-                            // Redirigir a la pantalla principal al iniciar sesión
+                          onPressed:() {
+                            //Redirigir a la pantalla principal al iniciar sesión
                             Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => MainScreen()), // Cambiar a MainScreen
+                            context,
+                             MaterialPageRoute(builder: (context) => MainScreen()), // Cambiar a MainScreen
                             );
                           },
                           style: ElevatedButton.styleFrom(

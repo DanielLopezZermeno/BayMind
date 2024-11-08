@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   intl: ^0.18.0 # Asegúrate de usar una versión compatible (esto es solo un ejemplo)
-
+  http: ^0.13.4
 
 dev_dependencies:
   flutter_test:
