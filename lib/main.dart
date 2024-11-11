@@ -11,6 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false, // Esto elimina la etiqueta DEBUG
       title: 'BayMind',
       theme: ThemeData(
         primarySwatch: Colors.purple,
@@ -26,9 +27,18 @@ class MainScreen extends StatefulWidget {
   @override
   _MainScreenState createState() => _MainScreenState();
 }
+class NavigationController {
+  static Function(int)? changeTab;
+
+  static void updateTab(int index) {
+    if (changeTab != null) {
+      changeTab!(index);
+    }
+  }
+}
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 2;
+  int _currentIndex = 0;
 
   final List<Widget> _screens = [
     HomeScreen(),
@@ -43,7 +53,23 @@ class _MainScreenState extends State<MainScreen> {
       _currentIndex = index;
     });
   }
+@override
+  void initState() {
+    super.initState();
+    // Asigna la función de cambio de índice al controlador
+    NavigationController.changeTab = (int index) {
+      setState(() {
+        _currentIndex = index;
+      });
+    };
+  }
 
+  @override
+  void dispose() {
+    // Limpia el callback para evitar fugas de memoria
+    NavigationController.changeTab = null;
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

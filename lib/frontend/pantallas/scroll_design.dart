@@ -61,7 +61,7 @@ class Background extends StatelessWidget {
       height: double.infinity,
       width: double.infinity,
       child: Image(
-        image: AssetImage('assets/image.png'), // Reemplaza 'image.png' con la imagen correcta de tu fondo
+        image: AssetImage('assets/Fondo.jpg'), // Reemplaza 'image.png' con la imagen correcta de tu fondo
         fit: BoxFit.cover,
       ),
     );
@@ -89,26 +89,26 @@ class _LoginScreenState extends State<LoginScreen> {
             alignment: Alignment.bottomCenter,
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                padding: EdgeInsets.symmetric(horizontal: 0.0),
                 child: Container(
                   padding: EdgeInsets.all(20.0),
                   height: MediaQuery.of(context).size.height * 0.75,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(45),
+                      topRight: Radius.circular(45),
                     ),
                     gradient: LinearGradient(
                       colors: [
                         Colors.white.withOpacity(0.8),
-                        Colors.white.withOpacity(0.5),
+                        Colors.white,
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black26,
+                        color: const Color(0x000e5e5e5),
                         blurRadius: 10,
                         offset: Offset(0, 4),
                       ),
@@ -120,26 +120,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text(
                         'Iniciar Sesión',
-                        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black, fontFamily: 'Manrope',),
                       ),
                       SizedBox(height: 20),
-                      Text('Correo', style: TextStyle(fontSize: 16, color: Colors.black)),
+                      Text('Correo', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
                       SizedBox(height: 8),
                       TextField(
                         controller: _emailController,
                         decoration: InputDecoration(
                           prefixIcon: Icon(Icons.mail),
                           hintText: 'jon@gmail.com',
-                          hintStyle: TextStyle(color: Colors.grey),
+                          hintStyle: TextStyle(color: Colors.grey, fontFamily: 'Manrope',),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           filled: true,
                           fillColor: Colors.white.withOpacity(0.7),
                         ),
                       ),
                       SizedBox(height: 20),
-                      Text('Contraseña', style: TextStyle(fontSize: 16, color: Colors.black)),
+                      Text('Contraseña', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
                       SizedBox(height: 8),
                       TextField(
                         controller: _passwordController,
@@ -157,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           hintText: 'Contraseña',
                           hintStyle: TextStyle(color: Colors.grey),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           filled: true,
                           fillColor: Colors.white.withOpacity(0.7),
@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           gradient: LinearGradient(
-                            colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
+                            colors: [Color.fromARGB(255, 109, 174, 239), Color.fromARGB(255, 50, 151, 246)],
                           ),
                         ),
                         child: ElevatedButton(
@@ -185,10 +185,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: Text('Iniciar', style: TextStyle(fontSize: 18, color: Colors.white)),
+                          child: Text('Iniciar', style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
                         ),
                       ),
                       SizedBox(height: 20),
@@ -197,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             // Añadir lógica para "Olvidaste tu contraseña"
                           },
-                          child: Text('¿Olvidaste la contraseña?', style: TextStyle(color: Colors.black, fontSize: 14)),
+                          child: Text('¿Olvidaste la contraseña?', style: TextStyle(color: Colors.black, fontSize: 14, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
                         ),
                       ),
                       Row(
@@ -205,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Expanded(child: Divider(thickness: 1, color: Colors.black)),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text("o", style: TextStyle(fontSize: 20)),
+                            child: Text("o", style: TextStyle(fontSize: 20, fontFamily: 'Manrope', fontWeight: FontWeight.bold)),
                           ),
                           Expanded(child: Divider(thickness: 1, color: Colors.black)),
                         ],
@@ -215,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('¿No tienes cuenta?', style: TextStyle(fontSize: 14, color: Colors.black)),
+                            Text('¿No tienes cuenta?', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
                             TextButton(
                               onPressed: () {
                                 Navigator.push(
@@ -223,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   MaterialPageRoute(builder: (context) => RegisterScreen()), // Cambiar a RegisterScreen
                                 );
                               },
-                              child: Text('Registrar', style: TextStyle(color: Colors.blue, fontSize: 14)),
+                              child: Text('Registrar', style: TextStyle(color: const Color.fromARGB(255, 50, 151, 245), fontSize: 14, fontFamily: 'Manrope',)),
                             ),
                           ],
                         ),
@@ -263,19 +263,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
             alignment: Alignment.bottomCenter,
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                padding: EdgeInsets.symmetric(horizontal: 0),
                 child: Container(
                   padding: EdgeInsets.all(20.0),
                   height: MediaQuery.of(context).size.height * 0.75,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(45),
+                      topRight: Radius.circular(45),
                     ),
                     gradient: LinearGradient(
                       colors: [
                         Colors.white.withOpacity(0.8),
-                        Colors.white.withOpacity(0.5),
+                        Colors.white,
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -291,9 +291,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Registrar', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black)),
+                      Text('Registrar', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black, fontFamily: 'Manrope',)),
                       SizedBox(height: 20),
-                      Text('Correo', style: TextStyle(fontSize: 16, color: Colors.black)),
+                      Text('Correo', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
                       SizedBox(height: 8),
                       TextField(
                         controller: _emailController,
@@ -309,7 +309,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       SizedBox(height: 20),
-                      Text('Contraseña', style: TextStyle(fontSize: 16, color: Colors.black)),
+                      Text('Contraseña', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
                       SizedBox(height: 8),
                       TextField(
                         controller: _passwordController,
@@ -334,7 +334,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       SizedBox(height: 20),
-                      Text('Confirmar Contraseña', style: TextStyle(fontSize: 16, color: Colors.black)),
+                      Text('Confirmar Contraseña', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
                       SizedBox(height: 8),
                       TextField(
                         controller: _confirmPasswordController,
@@ -365,7 +365,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           gradient: LinearGradient(
-                            colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
+                            colors: [Color.fromARGB(255, 109, 174, 239), Color.fromARGB(255, 50, 151, 246)],
                           ),
                         ),
                         child: ElevatedButton(
@@ -382,7 +382,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: Text('Registrar', style: TextStyle(fontSize: 18, color: Colors.white)),
+                          child: Text('Registrar', style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
                         ),
                       ),
                       SizedBox(height: 20),
@@ -391,7 +391,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Expanded(child: Divider(thickness: 1, color: Colors.black)),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text("o", style: TextStyle(fontSize: 20)),
+                            child: Text("o", style: TextStyle(fontSize: 20, fontFamily: 'Manrope', fontWeight: FontWeight.bold)),
                           ),
                           Expanded(child: Divider(thickness: 1, color: Colors.black)),
                         ],
@@ -401,7 +401,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('¿Ya tienes cuenta?', style: TextStyle(fontSize: 14, color: Colors.black)),
+                            Text('¿Ya tienes cuenta?', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
                             TextButton(
                               onPressed: () {
                                 Navigator.push(
@@ -409,7 +409,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   MaterialPageRoute(builder: (context) => LoginScreen()), // Cambiar a RegisterScreen
                                 );
                               },
-                              child: Text('Iniciar sesion', style: TextStyle(color: Colors.blue, fontSize: 14)),
+                              child: Text('Iniciar sesión', style: TextStyle(color: Colors.blue, fontSize: 14, fontFamily: 'Manrope',)),
                             ),
                           ],
                         ),

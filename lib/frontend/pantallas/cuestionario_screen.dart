@@ -1,6 +1,7 @@
 import 'package:baymind/frontend/pantallas/home_screen.dart';
 import 'package:baymind/main.dart';
 import 'package:flutter/material.dart';
+import 'package:baymind/frontend/widgets/colors.dart';
 
 class CuestionarioScreen extends StatefulWidget {
   @override
@@ -24,12 +25,26 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Cuéntame un poco de ti...',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.purple,
+              ShaderMask(
+                shaderCallback: (bounds) {
+                  return LinearGradient(
+                    colors: [
+                      AppColors.morado,
+                      AppColors.azul
+                    ], // Gradiente desde morado hasta azul
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds);
+                },
+                child: Text(
+                  'Cuéntame un poco de ti...',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors
+                        .white, // Se usa blanco para que el gradiente se vea correctamente
+                    fontFamily: 'Manrope',
+                  ),
                 ),
               ),
               SizedBox(height: 20),
@@ -38,12 +53,14 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: '¿Cuál es tu nombre?',
+                  labelStyle: TextStyle(fontFamily: 'Manrope'),
                   border: OutlineInputBorder(),
                 ),
               ),
               SizedBox(height: 20),
               // Edad
-              Text('¿Cuál es tu edad?'),
+              Text('¿Cuál es tu edad?',
+                  style: TextStyle(fontFamily: 'Manrope')),
               DropdownButton<String>(
                 value: selectedAge,
                 items: List.generate(83, (index) => (index + 18).toString())
@@ -60,7 +77,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
               ),
               SizedBox(height: 20),
               // Estudias
-              Text('¿Estudias?'),
+              Text('¿Estudias?', style: TextStyle(fontFamily: 'Manrope')),
               Row(
                 children: [
                   Radio(
@@ -72,7 +89,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                       });
                     },
                   ),
-                  Text('Sí'),
+                  Text('Sí', style: TextStyle(fontFamily: 'Manrope')),
                   Radio(
                     value: false,
                     groupValue: isStudent,
@@ -82,12 +99,12 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                       });
                     },
                   ),
-                  Text('No'),
+                  Text('No', style: TextStyle(fontFamily: 'Manrope')),
                 ],
               ),
               SizedBox(height: 20),
               // Trabajas
-              Text('¿Trabajas?'),
+              Text('¿Trabajas?', style: TextStyle(fontFamily: 'Manrope')),
               Row(
                 children: [
                   Radio(
@@ -99,7 +116,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                       });
                     },
                   ),
-                  Text('Sí'),
+                  Text('Sí', style: TextStyle(fontFamily: 'Manrope')),
                   Radio(
                     value: false,
                     groupValue: isWorking,
@@ -109,7 +126,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                       });
                     },
                   ),
-                  Text('No'),
+                  Text('No', style: TextStyle(fontFamily: 'Manrope')),
                 ],
               ),
               SizedBox(height: 20),
@@ -120,11 +137,13 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                 decoration: InputDecoration(
                   labelText: '¿Por qué te gustaría usar BayMind?',
                   border: OutlineInputBorder(),
+                  labelStyle: TextStyle(fontFamily: 'Manrope'),
                 ),
               ),
               SizedBox(height: 20),
               // Terapia psicológica
-              Text('¿Has tomado terapia psicológica?'),
+              Text('¿Has tomado terapia psicológica?',
+                  style: TextStyle(fontFamily: 'Manrope')),
               Row(
                 children: [
                   Radio(
@@ -136,7 +155,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                       });
                     },
                   ),
-                  Text('Sí'),
+                  Text('Sí', style: TextStyle(fontFamily: 'Manrope')),
                   Radio(
                     value: false,
                     groupValue: hasTherapy,
@@ -146,7 +165,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                       });
                     },
                   ),
-                  Text('No'),
+                  Text('No', style: TextStyle(fontFamily: 'Manrope')),
                 ],
               ),
               SizedBox(height: 20),
@@ -156,7 +175,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                 height: 50,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)],
+                    colors: [AppColors.morado, AppColors.azul],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                   ),
@@ -164,10 +183,12 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
-                  // Redirigir a la pantalla principal al registrarse
+                    // Redirigir a la pantalla principal al registrarse
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => MainScreen()), // Cambiar a MainScreen
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              MainScreen()), // Cambiar a MainScreen
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -179,7 +200,10 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                   ),
                   child: Text(
                     'Continuar',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontFamily: 'Manrope'),
                   ),
                 ),
               ),
