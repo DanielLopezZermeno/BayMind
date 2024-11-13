@@ -10,6 +10,13 @@
 .svn/
 migrate_working_dir/
 
+#Dependencias servidor
+**/lib/backend/api/node_modules
+**/lib/backend/api/package-lock.json
+
+#Variables locales
+**/lib/backend/api/.env
+
 # IntelliJ related
 *.iml
 *.ipr
@@ -41,3 +48,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+linux/flutter/generated_plugin_registrant.*
+macos/Flutter/GeneratedPluginRegistrant.*
+windows/flutter/generated_plugin_registrant.*
+
+/assets/dialog_flow_auth.json

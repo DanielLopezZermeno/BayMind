@@ -1,65 +1,87 @@
+import 'package:baymind/frontend/pantallas/Baymind.dart';
+import 'package:baymind/frontend/pantallas/calendario_screen.dart';
+import 'package:baymind/frontend/pantallas/avance_screen.dart';
+import 'package:baymind/frontend/pantallas/perfil_screen.dart';
+import 'package:baymind/frontend/pantallas/home_screen.dart';
+import 'package:baymind/frontend/menu/navigation_bar.dart';
+import 'package:baymind/frontend/pantallas/scroll_design.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Inicio',
-      home: MyHomePage(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false, // Esto elimina la etiqueta DEBUG
+      title: 'BayMind',
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+
+      ),
+      home: ScrollScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
+class MainScreen extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MainScreenState createState() => _MainScreenState();
+}
+class NavigationController {
+  static Function(int)? changeTab;
+
+  static void updateTab(int index) {
+    if (changeTab != null) {
+      changeTab!(index);
+    }
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  String _title = 'Button con acción';
-  int x=0;
-  void _changeTitle() {
+class _MainScreenState extends State<MainScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    HomeScreen(),
+    CalendarioScreen(),
+    BaymindScreen(),
+    AvanceScreen(),
+    PerfilScreen(),
+  ];
+
+  void _onItemTapped(int index) {
     setState(() {
-       x++;
-      _title = '¡Título cambiado! $x veces';
+      _currentIndex = index;
     });
   }
-  void _restarTitle(){
-    setState((){
-      x--;
-      _title = '¡Título cambiado! $x veces';
-    });
+@override
+  void initState() {
+    super.initState();
+    // Asigna la función de cambio de índice al controlador
+    NavigationController.changeTab = (int index) {
+      setState(() {
+        _currentIndex = index;
+      });
+    };
   }
 
+  @override
+  void dispose() {
+    // Limpia el callback para evitar fugas de memoria
+    NavigationController.changeTab = null;
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_title),
-      ),
-      body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: _changeTitle,
-              child: const Text('Sumar'),
-            ),
-            ElevatedButton(
-              onPressed: _restarTitle,
-              child: const Text('Restar'),
-            ),
-          ],
-        ),
+      body: _screens[_currentIndex],
+      bottomNavigationBar: CustomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
+}
+
+void main() {
+  runApp(MyApp());
 }

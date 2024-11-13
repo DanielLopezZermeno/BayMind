@@ -1,14 +1,23 @@
 name: baymind
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: ^3.5.3
+  sdk: ">=2.19.4 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  intl: ^0.18.0 # Asegúrate de usar una versión compatible (esto es solo un ejemplo)
+  animated_background: 2.0.0
+  wave: ^0.2.0
+  fl_chart: ^0.69.0
+  image_picker: ^0.8.5+3
+  fluttertoast: ^8.0.9
+  avatar_glow: ^2.0.0
+  speech_to_text: ^7.0.0
+  dialog_flowtter: ^0.3.3
 
 dev_dependencies:
   flutter_test:
@@ -17,3 +26,15 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/dialog_flow_auth.json
+  fonts:
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope/static/Manrope-Regular.ttf
+        - asset: assets/fonts/Manrope/static/Manrope-Bold.ttf
+          weight: 700 # Si tienes una versión en negrita de la fuente
+        - asset: assets/fonts/Manrope/static/Manrope-ExtraBold.ttf
+          weight: 800
