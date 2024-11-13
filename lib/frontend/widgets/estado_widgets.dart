@@ -1,6 +1,7 @@
 import 'package:baymind/frontend/widgets/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_background/animated_background.dart';
+import 'package:baymind/servicios/notification_services.dart';
 
 class EstadoCard extends StatefulWidget {
   final List<Color> gradientColors;
@@ -153,7 +154,9 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
               SizedBox(height: 30),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    mostrarNotificacion();
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: widget.buttonColor,
                     shape: RoundedRectangleBorder(

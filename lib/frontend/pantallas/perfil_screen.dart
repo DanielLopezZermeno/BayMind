@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:baymind/servicios/notification_services.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -136,6 +137,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                   onChanged: (value) {
                     setState(() {
                       _notificationsEnabled = value;
+                      mostrarNotificacion();
                     });
                   },
                 ),

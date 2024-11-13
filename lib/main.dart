@@ -5,8 +5,8 @@ import 'package:baymind/frontend/pantallas/perfil_screen.dart';
 import 'package:baymind/frontend/pantallas/home_screen.dart';
 import 'package:baymind/frontend/menu/navigation_bar.dart';
 import 'package:baymind/frontend/pantallas/scroll_design.dart';
+import 'package:baymind/servicios/notification_services.dart';
 import 'package:flutter/material.dart';
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -82,6 +82,10 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-void main() {
+void main() async{
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await initNotificactions();
   runApp(MyApp());
 }
