@@ -1,25 +1,30 @@
 import 'dart:io';
+
+import 'package:baymind/frontend/widgets/colors.dart';
 import 'package:baymind/servicios/notification_services.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:baymind/frontend/widgets/colors.dart';
 
 class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _PerfilScreenState createState() => _PerfilScreenState();
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
   File? _profileImage;
   final ImagePicker _picker = ImagePicker();
-  // ignore: prefer_final_fields
   TextEditingController _nameController = TextEditingController();
   DateTime? _birthDate;
   bool _notificationsEnabled = true;
+
+  // Variables para almacenar las horas seleccionadas para cada notificación
+  TimeOfDay _selectedTimeRespirar = TimeOfDay(hour: 11, minute: 0);
+  TimeOfDay _selectedTimePausa = TimeOfDay(hour: 15, minute: 0);
+  TimeOfDay _selectedTimeReflexion = TimeOfDay(hour: 18, minute: 0);
+  TimeOfDay _selectedTimeMeditar = TimeOfDay(hour: 19, minute: 0);
 
   @override
   void initState() {
@@ -53,12 +58,63 @@ class _PerfilScreenState extends State<PerfilScreen> {
     }
   }
 
+  // Método para seleccionar hora de notificación
+  Future<void> _selectTime(
+      BuildContext context, String notificationType) async {
+    TimeOfDay? selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (selectedTime != null) {
+      setState(() {
+        switch (notificationType) {
+          case 'respirar':
+            _selectedTimeRespirar = selectedTime;
+            break;
+          case 'pausa':
+            _selectedTimePausa = selectedTime;
+            break;
+          case 'reflexion':
+            _selectedTimeReflexion = selectedTime;
+            break;
+          case 'meditar':
+            _selectedTimeMeditar = selectedTime;
+            break;
+        }
+      });
+    }
+  }
+
+  // Método para convertir TimeOfDay a DateTime
+  DateTime _convertToDateTime(TimeOfDay timeOfDay) {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, timeOfDay.hour, timeOfDay.minute);
+  }
+
+  // Método para actualizar las horas de las notificaciones
+  void _updateNotificationTimes() {
+    if (_notificationsEnabled) {
+      // Convertir las horas seleccionadas a DateTime
+      DateTime timeRespirar = _convertToDateTime(_selectedTimeRespirar);
+      DateTime timePausa = _convertToDateTime(_selectedTimePausa);
+      DateTime timeReflexion = _convertToDateTime(_selectedTimeReflexion);
+      DateTime timeMeditar = _convertToDateTime(_selectedTimeMeditar);
+
+      // Llamar a las funciones de notificación con los DateTime correctos
+      programarNotificacionRespirar(timeRespirar);
+      programarNotificacionPausa(timePausa);
+      programarNotificacionReflexion(timeReflexion);
+      programarNotificacionMeditar(timeMeditar);
+    }
+  }
+
   // Método para cerrar sesión (simulación)
   void _logout() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Cerrar Sesión" ),
+        title: const Text("Cerrar Sesión"),
         content: const Text("¿Estás seguro de que deseas cerrar sesión?"),
         actions: [
           TextButton(
@@ -80,8 +136,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Perfil",style:
-                TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Manrope', color: AppColors.morado)),
+        title: const Text(
+          "Perfil",
+          style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Manrope', color: AppColors.morado),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -94,8 +152,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               child: CircleAvatar(
                 radius: 60,
                 backgroundColor: Colors.grey[300],
-                backgroundImage:
-                    _profileImage != null ? FileImage(_profileImage!) : null,
+                backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
                 child: _profileImage == null
                     ? const Icon(Icons.add_a_photo, size: 40, color: Colors.grey)
                     : null,
@@ -141,12 +198,38 @@ class _PerfilScreenState extends State<PerfilScreen> {
                   onChanged: (value) {
                     setState(() {
                       _notificationsEnabled = value;
-                      mostrarNotificacion();
+                      if (value) {
+                        _updateNotificationTimes();
+                      }
                     });
                   },
                 ),
               ],
             ),
+            const SizedBox(height: 20),
+
+            // Selección de las horas para las notificaciones
+            ListTile(
+              title: const Text("Hora de respiración"),
+              subtitle: Text("${_selectedTimeRespirar.format(context)}"),
+              onTap: () => _selectTime(context, 'respirar'),
+            ),
+            ListTile(
+              title: const Text("Hora de pausa"),
+              subtitle: Text("${_selectedTimePausa.format(context)}"),
+              onTap: () => _selectTime(context, 'pausa'),
+            ),
+            ListTile(
+              title: const Text("Hora de reflexión"),
+              subtitle: Text("${_selectedTimeReflexion.format(context)}"),
+              onTap: () => _selectTime(context, 'reflexion'),
+            ),
+            ListTile(
+              title: const Text("Hora de meditación"),
+              subtitle: Text("${_selectedTimeMeditar.format(context)}"),
+              onTap: () => _selectTime(context, 'meditar'),
+            ),
+
             const SizedBox(height: 20),
 
             // Botón de Cerrar Sesión
@@ -155,8 +238,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
               ),
-              child: const Text("Cerrar Sesión",style:
-                TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Manrope', color: Colors.white)),
+              child: const Text(
+                "Cerrar Sesión",
+                style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Manrope', color: Colors.white),
+              ),
             ),
           ],
         ),

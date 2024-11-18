@@ -71,15 +71,10 @@ Future<void> programarNotificacion(DateTime time) async {
   );
 }
 
-// Función para programar una notificación diaria a las 11:00 AM
-Future<void> programarNotificacionRespirar() async {
+// Función para programar una notificación diaria a las 11:00 AM (o la hora seleccionada)
+Future<void> programarNotificacionRespirar(DateTime time) async {
   final location = tz.getLocation('America/Argentina/Buenos_Aires');
-  final now = tz.TZDateTime.now(location);
-  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 11, 0);
-
-  if (scheduledTime.isBefore(now)) {
-    scheduledTime.add(Duration(days: 1)); // Agenda para el día siguiente
-  }
+  final tzTime = tz.TZDateTime.from(time, location); // Convertir DateTime a TZDateTime
 
   const AndroidNotificationDetails androidNotificationDetails =
       AndroidNotificationDetails(
@@ -97,7 +92,7 @@ Future<void> programarNotificacionRespirar() async {
     2, // ID único
     'Momento de autocuidado',
     'Tomarte un momento para respirar profundamente es un acto de autocuidado. ¡Hazlo ahora! 🌬️💆‍♀️',
-    scheduledTime,
+    tzTime, // Hora programada con zona horaria
     notificationDetails,
     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     uiLocalNotificationDateInterpretation:
@@ -106,15 +101,10 @@ Future<void> programarNotificacionRespirar() async {
   );
 }
 
-// Función para programar una notificación diaria a las 3:00 PM
-Future<void> programarNotificacionPausa() async {
+// Función para programar una notificación diaria a las 3:00 PM (o la hora seleccionada)
+Future<void> programarNotificacionPausa(DateTime time) async {
   final location = tz.getLocation('America/Argentina/Buenos_Aires');
-  final now = tz.TZDateTime.now(location);
-  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 15, 0);
-
-  if (scheduledTime.isBefore(now)) {
-    scheduledTime.add(Duration(days: 1)); // Agenda para el día siguiente
-  }
+  final tzTime = tz.TZDateTime.from(time, location); // Convertir DateTime a TZDateTime
 
   const AndroidNotificationDetails androidNotificationDetails =
       AndroidNotificationDetails(
@@ -132,7 +122,7 @@ Future<void> programarNotificacionPausa() async {
     3, // ID único
     'Haz una pausa',
     'A veces el mejor cuidado es simplemente detenerte y respirar. 🌸💆‍♂️',
-    scheduledTime,
+    tzTime, // Hora programada con zona horaria
     notificationDetails,
     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     uiLocalNotificationDateInterpretation:
@@ -141,15 +131,10 @@ Future<void> programarNotificacionPausa() async {
   );
 }
 
-// Función para programar una notificación diaria a las 6:00 PM
-Future<void> programarNotificacionReflexion() async {
-  final location = tz.getLocation('America/Argentina/Buenos_Aires');
-  final now = tz.TZDateTime.now(location);
-  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 18, 0);
-
-  if (scheduledTime.isBefore(now)) {
-    scheduledTime.add(Duration(days: 1)); // Agenda para el día siguiente
-  }
+// Función para programar una notificación diaria a las 6:00 PM (o la hora seleccionada)
+Future<void> programarNotificacionReflexion(DateTime time) async {
+  final location = tz.getLocation('America/Mexico_City');
+  final tzTime = tz.TZDateTime.from(time, location); // Convertir DateTime a TZDateTime
 
   const AndroidNotificationDetails androidNotificationDetails =
       AndroidNotificationDetails(
@@ -167,7 +152,7 @@ Future<void> programarNotificacionReflexion() async {
     5, // ID único
     'Hoy, reflexionemos juntos',
     'Hoy, reflexionemos juntos. 🌸 ¿Qué te hace sentir bien en este momento? Puedo ayudarte a encontrar maneras de nutrir esa sensación.',
-    scheduledTime,
+    tzTime, // Hora programada con zona horaria
     notificationDetails,
     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     uiLocalNotificationDateInterpretation:
@@ -176,15 +161,10 @@ Future<void> programarNotificacionReflexion() async {
   );
 }
 
-// Función para programar una notificación diaria a las 7:00 PM
-Future<void> programarNotificacionMeditar() async {
+// Función para programar una notificación diaria a las 7:00 PM (o la hora seleccionada)
+Future<void> programarNotificacionMeditar(DateTime time) async {
   final location = tz.getLocation('America/Argentina/Buenos_Aires');
-  final now = tz.TZDateTime.now(location);
-  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 19, 0);
-
-  if (scheduledTime.isBefore(now)) {
-    scheduledTime.add(Duration(days: 1)); // Agenda para el día siguiente
-  }
+  final tzTime = tz.TZDateTime.from(time, location); // Convertir DateTime a TZDateTime
 
   const AndroidNotificationDetails androidNotificationDetails =
       AndroidNotificationDetails(
@@ -202,7 +182,7 @@ Future<void> programarNotificacionMeditar() async {
     6, // ID único
     'Reduce el estrés con meditación',
     '¿Sabías que meditar solo 5 minutos puede ayudarte a reducir el estrés? 🧘‍♀️ Si te interesa, puedo guiarte en una breve sesión.',
-    scheduledTime,
+    tzTime, // Hora programada con zona horaria
     notificationDetails,
     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     uiLocalNotificationDateInterpretation:
@@ -211,11 +191,12 @@ Future<void> programarNotificacionMeditar() async {
   );
 }
 
-// Llamar las funciones para programar todas las notificaciones
-void programarTodasLasNotificaciones() {
+
+// Llamar las funciones para programar todas las notificaciones con las horas seleccionadas
+void programarTodasLasNotificaciones(DateTime timeRespirar, DateTime timePausa, DateTime timeReflexion, DateTime timeMeditar) {
   programarNotificacion(DateTime(2024, 11, 17, 9, 0, 0)); // 9:00 AM
-  programarNotificacionRespirar();
-  programarNotificacionPausa();
-  programarNotificacionReflexion();
-  programarNotificacionMeditar();
+  programarNotificacionRespirar(timeRespirar);  
+  programarNotificacionPausa(timePausa);      
+  programarNotificacionReflexion(timeReflexion);  
+  programarNotificacionMeditar(timeMeditar);  
 }
