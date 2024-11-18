@@ -1,145 +1,199 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz_data;
+import 'package:timezone/timezone.dart' as tz;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
-// Inicialización de las notificaciones
+// Inicialización de las notificaciones para Android
 Future<void> initNotificactions() async {
-  const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('icono_notificacion');  // Asegúrate de tener un icono para la notificación.
+  tz_data.initializeTimeZones();  // Inicializa las zonas horarias
 
-  const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings();
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('icono_notificacion'); 
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
-    iOS: initializationSettingsIOS,
   );
 
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
-// Mostrar notificación de registro creado
-Future<void> mostrarNotificacion() async {
-  const AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
-    'yout_channel_id', 
-    'your_channel_name', 
-    importance: Importance.max, 
-    priority: Priority.high
+// Función para programar notificación en una zona horaria específica
+Future<void> programarNotificacion(DateTime time) async {
+ final location = tz.getLocation('America/Mexico_City');
+  final tzTime = tz.TZDateTime.from(time, location);  // Convierte la hora a TZDateTime
+
+  const AndroidNotificationDetails androidNotificationDetails =
+      AndroidNotificationDetails(
+    'yout_channel_id',
+    'your_channel_name',
+    importance: Importance.max,
+    priority: Priority.high,
   );
 
   const NotificationDetails notificationDetails = NotificationDetails(
     android: androidNotificationDetails,
   );
 
-  await flutterLocalNotificationsPlugin.show(
-    1, 
-    'Registro creado', 
-    'Tu registro se agregó exitosamente', 
-    notificationDetails
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    1, // ID único para la notificación
+    'Registro creado',
+    'Tu registro se agregó exitosamente',
+    tzTime,  // Hora programada con zona horaria
+    notificationDetails,
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, 
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.wallClockTime, 
+    matchDateTimeComponents: DateTimeComponents.time, 
   );
 }
 
-// Notificación para recordar respirar profundamente
-Future<void> mostrarNotificacionRespirar() async {
-  const AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
-    'yout_channel_id', 
-    'your_channel_name', 
-    importance: Importance.max, 
-    priority: Priority.high
+// Función para programar una notificación diaria (11:00 AM)
+Future<void> programarNotificacionRespirar() async {
+  final location = tz.getLocation('America/Argentina/Buenos_Aires'); // Cambia la zona horaria si es necesario
+  final now = tz.TZDateTime.now(location);
+  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 11, 0); // 11:00 AM
+
+  if (scheduledTime.isBefore(now)) {
+    scheduledTime.add(Duration(days: 1)); // Si ya pasó la hora de hoy, agenda para el día siguiente
+  }
+
+  const AndroidNotificationDetails androidNotificationDetails =
+      AndroidNotificationDetails(
+    'yout_channel_id',
+    'your_channel_name',
+    importance: Importance.max,
+    priority: Priority.high,
   );
 
   const NotificationDetails notificationDetails = NotificationDetails(
     android: androidNotificationDetails,
   );
 
-  await flutterLocalNotificationsPlugin.show(
-    2,  // Un ID diferente para esta notificación
-    'Momento de autocuidado', 
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    2, // ID único
+    'Momento de autocuidado',
     'Tomarte un momento para respirar profundamente es un acto de autocuidado. ¡Hazlo ahora! 🌬️💆‍♀️',
-    notificationDetails
+    scheduledTime,
+    notificationDetails,
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, 
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.wallClockTime, 
+    matchDateTimeComponents: DateTimeComponents.time, 
   );
 }
 
-// Notificación para recordar hacer una pausa
-Future<void> mostrarNotificacionPausa() async {
-  const AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
-    'yout_channel_id', 
-    'your_channel_name', 
-    importance: Importance.max, 
-    priority: Priority.high
+// Función para programar una notificación diaria (3:00 PM)
+Future<void> programarNotificacionPausa() async {
+  final location = tz.getLocation('America/Argentina/Buenos_Aires'); // Cambia la zona horaria si es necesario
+  final now = tz.TZDateTime.now(location);
+  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 15, 0); // 3:00 PM
+
+  if (scheduledTime.isBefore(now)) {
+    scheduledTime.add(Duration(days: 1)); // Si ya pasó la hora de hoy, agenda para el día siguiente
+  }
+
+  const AndroidNotificationDetails androidNotificationDetails =
+      AndroidNotificationDetails(
+    'yout_channel_id',
+    'your_channel_name',
+    importance: Importance.max,
+    priority: Priority.high,
   );
 
   const NotificationDetails notificationDetails = NotificationDetails(
     android: androidNotificationDetails,
   );
 
-  await flutterLocalNotificationsPlugin.show(
-    3,  // Un ID diferente para esta nueva notificación
-    'Haz una pausa', 
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    3, // ID único
+    'Haz una pausa',
     'A veces el mejor cuidado es simplemente detenerte y respirar. 🌸💆‍♂️',
-    notificationDetails
+    scheduledTime,
+    notificationDetails,
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, 
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.wallClockTime, 
+    matchDateTimeComponents: DateTimeComponents.time, 
   );
 }
 
-// Notificación para detenerse y explorar lo que estás sintiendo
-Future<void> mostrarNotificacionSentir() async {
-  const AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
-    'yout_channel_id', 
-    'your_channel_name', 
-    importance: Importance.max, 
-    priority: Priority.high
+// Función para programar una notificación diaria (6:00 PM)
+Future<void> programarNotificacionReflexion() async {
+  final location = tz.getLocation('America/Argentina/Buenos_Aires'); // Cambia la zona horaria si es necesario
+  final now = tz.TZDateTime.now(location);
+  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 18, 0); // 6:00 PM
+
+  if (scheduledTime.isBefore(now)) {
+    scheduledTime.add(Duration(days: 1)); // Si ya pasó la hora de hoy, agenda para el día siguiente
+  }
+
+  const AndroidNotificationDetails androidNotificationDetails =
+      AndroidNotificationDetails(
+    'yout_channel_id',
+    'your_channel_name',
+    importance: Importance.max,
+    priority: Priority.high,
   );
 
   const NotificationDetails notificationDetails = NotificationDetails(
     android: androidNotificationDetails,
   );
 
-  await flutterLocalNotificationsPlugin.show(
-    4,  // Un ID único para esta nueva notificación
-    'Detén tu día', 
-    'Detén tu día por un momento. ¿Qué estás sintiendo ahora mismo? Tómate un minuto para explorar. 🧠💭',
-    notificationDetails
-  );
-}
-
-// Notificación para reflexionar juntos sobre el bienestar
-Future<void> mostrarNotificacionReflexion() async {
-  const AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
-    'yout_channel_id', 
-    'your_channel_name', 
-    importance: Importance.max, 
-    priority: Priority.high
-  );
-
-  const NotificationDetails notificationDetails = NotificationDetails(
-    android: androidNotificationDetails,
-  );
-
-  await flutterLocalNotificationsPlugin.show(
-    5,  // Un ID único para esta nueva notificación
-    'Hoy, reflexionemos juntos', 
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    5, // ID único
+    'Hoy, reflexionemos juntos',
     'Hoy, reflexionemos juntos. 🌸 ¿Qué te hace sentir bien en este momento? Puedo ayudarte a encontrar maneras de nutrir esa sensación.',
-    notificationDetails
+    scheduledTime,
+    notificationDetails,
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, 
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.wallClockTime, 
+    matchDateTimeComponents: DateTimeComponents.time, 
   );
 }
 
-// Nueva notificación para meditar y reducir el estrés
-Future<void> mostrarNotificacionMeditar() async {
-  const AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
-    'yout_channel_id', 
-    'your_channel_name', 
-    importance: Importance.max, 
-    priority: Priority.high
+// Función para programar una notificación diaria (7:00 PM)
+Future<void> programarNotificacionMeditar() async {
+  final location = tz.getLocation('America/Argentina/Buenos_Aires'); // Cambia la zona horaria si es necesario
+  final now = tz.TZDateTime.now(location);
+  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 19, 0); // 7:00 PM
+
+  if (scheduledTime.isBefore(now)) {
+    scheduledTime.add(Duration(days: 1)); // Si ya pasó la hora de hoy, agenda para el día siguiente
+  }
+
+  const AndroidNotificationDetails androidNotificationDetails =
+      AndroidNotificationDetails(
+    'yout_channel_id',
+    'your_channel_name',
+    importance: Importance.max,
+    priority: Priority.high,
   );
 
   const NotificationDetails notificationDetails = NotificationDetails(
     android: androidNotificationDetails,
   );
 
-  await flutterLocalNotificationsPlugin.show(
-    6,  // Un ID único para esta nueva notificación
-    'Reduce el estrés con meditación', 
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    6, // ID único
+    'Reduce el estrés con meditación',
     '¿Sabías que meditar solo 5 minutos puede ayudarte a reducir el estrés? 🧘‍♀️ Si te interesa, puedo guiarte en una breve sesión.',
-    notificationDetails
+    scheduledTime,
+    notificationDetails,
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, 
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.wallClockTime, 
+    matchDateTimeComponents: DateTimeComponents.time, 
   );
+}
+
+// Llamar las funciones para programar todas las notificaciones
+void programarTodasLasNotificaciones() {
+  programarNotificacion(DateTime(2024, 11, 17, 9, 0, 0)); // 9:00 AM
+  programarNotificacionRespirar();
+  programarNotificacionPausa();
+  programarNotificacionReflexion();
+  programarNotificacionMeditar();
 }
