@@ -10,7 +10,7 @@ Future<void> initNotificactions() async {
   tz_data.initializeTimeZones();  // Inicializa las zonas horarias
 
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('icono_notificacion'); 
+      AndroidInitializationSettings('icono_notificacion'); // Asegúrate de tener el icono
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -19,10 +19,32 @@ Future<void> initNotificactions() async {
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
+// Función para mostrar una notificación simple
+Future<void> mostrarNotificacion() async {
+  const AndroidNotificationDetails androidNotificationDetails =
+      AndroidNotificationDetails(
+    'yout_channel_id',
+    'your_channel_name',
+    importance: Importance.max,
+    priority: Priority.high,
+  );
+
+  const NotificationDetails notificationDetails = NotificationDetails(
+    android: androidNotificationDetails,
+  );
+
+  await flutterLocalNotificationsPlugin.show(
+    1, // ID único
+    'Registro creado',
+    'Tu registro se agregó exitosamente',
+    notificationDetails,
+  );
+}
+
 // Función para programar notificación en una zona horaria específica
 Future<void> programarNotificacion(DateTime time) async {
- final location = tz.getLocation('America/Mexico_City');
-  final tzTime = tz.TZDateTime.from(time, location);  // Convierte la hora a TZDateTime
+  final location = tz.getLocation('America/Mexico_City');
+  final tzTime = tz.TZDateTime.from(time, location); // Convierte la hora a TZDateTime
 
   const AndroidNotificationDetails androidNotificationDetails =
       AndroidNotificationDetails(
@@ -40,23 +62,23 @@ Future<void> programarNotificacion(DateTime time) async {
     1, // ID único para la notificación
     'Registro creado',
     'Tu registro se agregó exitosamente',
-    tzTime,  // Hora programada con zona horaria
+    tzTime, // Hora programada con zona horaria
     notificationDetails,
-    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, 
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.wallClockTime, 
-    matchDateTimeComponents: DateTimeComponents.time, 
+        UILocalNotificationDateInterpretation.wallClockTime,
+    matchDateTimeComponents: DateTimeComponents.time,
   );
 }
 
-// Función para programar una notificación diaria (11:00 AM)
+// Función para programar una notificación diaria a las 11:00 AM
 Future<void> programarNotificacionRespirar() async {
-  final location = tz.getLocation('America/Argentina/Buenos_Aires'); // Cambia la zona horaria si es necesario
+  final location = tz.getLocation('America/Argentina/Buenos_Aires');
   final now = tz.TZDateTime.now(location);
-  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 11, 0); // 11:00 AM
+  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 11, 0);
 
   if (scheduledTime.isBefore(now)) {
-    scheduledTime.add(Duration(days: 1)); // Si ya pasó la hora de hoy, agenda para el día siguiente
+    scheduledTime.add(Duration(days: 1)); // Agenda para el día siguiente
   }
 
   const AndroidNotificationDetails androidNotificationDetails =
@@ -77,21 +99,21 @@ Future<void> programarNotificacionRespirar() async {
     'Tomarte un momento para respirar profundamente es un acto de autocuidado. ¡Hazlo ahora! 🌬️💆‍♀️',
     scheduledTime,
     notificationDetails,
-    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, 
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.wallClockTime, 
-    matchDateTimeComponents: DateTimeComponents.time, 
+        UILocalNotificationDateInterpretation.wallClockTime,
+    matchDateTimeComponents: DateTimeComponents.time,
   );
 }
 
-// Función para programar una notificación diaria (3:00 PM)
+// Función para programar una notificación diaria a las 3:00 PM
 Future<void> programarNotificacionPausa() async {
-  final location = tz.getLocation('America/Argentina/Buenos_Aires'); // Cambia la zona horaria si es necesario
+  final location = tz.getLocation('America/Argentina/Buenos_Aires');
   final now = tz.TZDateTime.now(location);
-  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 15, 0); // 3:00 PM
+  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 15, 0);
 
   if (scheduledTime.isBefore(now)) {
-    scheduledTime.add(Duration(days: 1)); // Si ya pasó la hora de hoy, agenda para el día siguiente
+    scheduledTime.add(Duration(days: 1)); // Agenda para el día siguiente
   }
 
   const AndroidNotificationDetails androidNotificationDetails =
@@ -112,21 +134,21 @@ Future<void> programarNotificacionPausa() async {
     'A veces el mejor cuidado es simplemente detenerte y respirar. 🌸💆‍♂️',
     scheduledTime,
     notificationDetails,
-    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, 
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.wallClockTime, 
-    matchDateTimeComponents: DateTimeComponents.time, 
+        UILocalNotificationDateInterpretation.wallClockTime,
+    matchDateTimeComponents: DateTimeComponents.time,
   );
 }
 
-// Función para programar una notificación diaria (6:00 PM)
+// Función para programar una notificación diaria a las 6:00 PM
 Future<void> programarNotificacionReflexion() async {
-  final location = tz.getLocation('America/Argentina/Buenos_Aires'); // Cambia la zona horaria si es necesario
+  final location = tz.getLocation('America/Argentina/Buenos_Aires');
   final now = tz.TZDateTime.now(location);
-  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 18, 0); // 6:00 PM
+  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 18, 0);
 
   if (scheduledTime.isBefore(now)) {
-    scheduledTime.add(Duration(days: 1)); // Si ya pasó la hora de hoy, agenda para el día siguiente
+    scheduledTime.add(Duration(days: 1)); // Agenda para el día siguiente
   }
 
   const AndroidNotificationDetails androidNotificationDetails =
@@ -147,21 +169,21 @@ Future<void> programarNotificacionReflexion() async {
     'Hoy, reflexionemos juntos. 🌸 ¿Qué te hace sentir bien en este momento? Puedo ayudarte a encontrar maneras de nutrir esa sensación.',
     scheduledTime,
     notificationDetails,
-    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, 
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.wallClockTime, 
-    matchDateTimeComponents: DateTimeComponents.time, 
+        UILocalNotificationDateInterpretation.wallClockTime,
+    matchDateTimeComponents: DateTimeComponents.time,
   );
 }
 
-// Función para programar una notificación diaria (7:00 PM)
+// Función para programar una notificación diaria a las 7:00 PM
 Future<void> programarNotificacionMeditar() async {
-  final location = tz.getLocation('America/Argentina/Buenos_Aires'); // Cambia la zona horaria si es necesario
+  final location = tz.getLocation('America/Argentina/Buenos_Aires');
   final now = tz.TZDateTime.now(location);
-  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 19, 0); // 7:00 PM
+  final scheduledTime = tz.TZDateTime(location, now.year, now.month, now.day, 19, 0);
 
   if (scheduledTime.isBefore(now)) {
-    scheduledTime.add(Duration(days: 1)); // Si ya pasó la hora de hoy, agenda para el día siguiente
+    scheduledTime.add(Duration(days: 1)); // Agenda para el día siguiente
   }
 
   const AndroidNotificationDetails androidNotificationDetails =
@@ -182,10 +204,10 @@ Future<void> programarNotificacionMeditar() async {
     '¿Sabías que meditar solo 5 minutos puede ayudarte a reducir el estrés? 🧘‍♀️ Si te interesa, puedo guiarte en una breve sesión.',
     scheduledTime,
     notificationDetails,
-    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, 
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.wallClockTime, 
-    matchDateTimeComponents: DateTimeComponents.time, 
+        UILocalNotificationDateInterpretation.wallClockTime,
+    matchDateTimeComponents: DateTimeComponents.time,
   );
 }
 
