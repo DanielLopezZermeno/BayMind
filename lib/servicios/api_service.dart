@@ -76,7 +76,7 @@ class ApiService {
         x: index,
         barRods: [
           BarChartRodData(
-            toY: 3, // Valor 0 en caso de error
+            toY: 0, // Valor 0 en caso de error
             gradient: _barsGradient,
           ),
         ],
@@ -124,13 +124,13 @@ class ApiService {
       return [
         LineChartBarData(
           spots: [
-            const FlSpot(0, 2), // Punto de valor 0 en el eje Y
-            const FlSpot(1, 4),
-            const FlSpot(2, 3),
-            const FlSpot(3, 1),
-            const FlSpot(4, 5),
-            const FlSpot(5, 4),
-            const FlSpot(6, 2),
+            const FlSpot(0, 0), // Punto de valor 0 en el eje Y
+            const FlSpot(1, 0),
+            const FlSpot(2, 0),
+            const FlSpot(3, 0),
+            const FlSpot(4, 0),
+            const FlSpot(5, 0),
+            const FlSpot(6, 0),
           ],
           isCurved: true,
           color: const Color.fromARGB(255, 255, 255, 255),
@@ -144,13 +144,13 @@ class ApiService {
     return [
       LineChartBarData(
         spots: [
-            const FlSpot(0, 2), // Punto de valor 0 en el eje Y
-            const FlSpot(1, 4),
-            const FlSpot(2, 3),
-            const FlSpot(3, 1),
-            const FlSpot(4, 5),
-            const FlSpot(5, 4),
-            const FlSpot(6, 2),
+            const FlSpot(0, 0), // Punto de valor 0 en el eje Y
+            const FlSpot(1, 0),
+            const FlSpot(2, 0),
+            const FlSpot(3, 0),
+            const FlSpot(4, 0),
+            const FlSpot(5, 0),
+            const FlSpot(6, 0),
           ],
         isCurved: true,
         color: const Color.fromARGB(255, 255, 255, 255),
