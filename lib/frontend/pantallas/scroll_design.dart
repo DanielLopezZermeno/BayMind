@@ -1,8 +1,11 @@
 import 'package:baymind/frontend/pantallas/cuestionario_screen.dart';
 import 'package:baymind/main.dart';
+import 'package:baymind/servicios/api_service.dart';
 import 'package:flutter/material.dart';
 
 class ScrollScreen extends StatelessWidget {
+  const ScrollScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -10,9 +13,9 @@ class ScrollScreen extends StatelessWidget {
         scrollDirection: Axis.vertical,
         itemBuilder: (context, index) {
           if (index == 0) {
-            return Page1();
+            return const Page1();
           } else {
-            return LoginScreen(); // Navegación a LoginScreen
+            return const LoginScreen(); // Navegación a LoginScreen
           }
         },
         itemCount: 2,
@@ -22,9 +25,11 @@ class ScrollScreen extends StatelessWidget {
 }
 
 class Page1 extends StatelessWidget {
+  const Page1({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return const Stack(
       children: [
         Background(),
         MainContent()
@@ -34,6 +39,8 @@ class Page1 extends StatelessWidget {
 }
 
 class MainContent extends StatelessWidget {
+  const MainContent({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -42,9 +49,9 @@ class MainContent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Expanded(child: Container()),
-          Icon(Icons.keyboard_arrow_down, size: 100, color: Colors.white),
+          const Icon(Icons.keyboard_arrow_down, size: 100, color: Colors.white),
         ],
       ),
     );
@@ -57,10 +64,10 @@ class Background extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xff30BAD6),
+      color: const Color(0xff30BAD6),
       height: double.infinity,
       width: double.infinity,
-      child: Image(
+      child: const Image(
         image: AssetImage('assets/Fondo.jpg'), // Reemplaza 'image.png' con la imagen correcta de tu fondo
         fit: BoxFit.cover,
       ),
@@ -70,7 +77,10 @@ class Background extends StatelessWidget {
 
 // Pantalla de Login
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _LoginScreenState createState() => _LoginScreenState();
 }
 
@@ -85,17 +95,17 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Background(),
+          const Background(),
           Align(
             alignment: Alignment.bottomCenter,
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 0.0),
+                padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 child: Container(
-                  padding: EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(20.0),
                   height: MediaQuery.of(context).size.height * 0.75,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(45),
                       topRight: Radius.circular(45),
                     ),
@@ -107,9 +117,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
-                        color: const Color(0x000e5e5e5),
+                        color: Color(0x00e5e5e5),
                         blurRadius: 10,
                         offset: Offset(0, 4),
                       ),
@@ -121,19 +131,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Iniciar Sesión',
                           style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black, fontFamily: 'Manrope',),
                         ),
-                        SizedBox(height: 20),
-                        Text('Correo', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 20),
+                        const Text('Correo', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
+                        const SizedBox(height: 8),
                         TextFormField(  // Cambiamos a TextFormField
                           controller: _emailController,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.mail),
+                            prefixIcon: const Icon(Icons.mail),
                             hintText: 'jon@gmail.com',
-                            hintStyle: TextStyle(color: Colors.grey, fontFamily: 'Manrope',),
+                            hintStyle: const TextStyle(color: Colors.grey, fontFamily: 'Manrope',),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -151,14 +161,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             return null;
                           },
                         ),
-                        SizedBox(height: 20),
-                        Text('Contraseña', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 20),
+                        const Text('Contraseña', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
+                        const SizedBox(height: 8),
                         TextFormField(  // Cambiamos a TextFormField
                           controller: _passwordController,
                           obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.lock),
+                            prefixIcon: const Icon(Icons.lock),
                             suffixIcon: IconButton(
                               icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
                               onPressed: () {
@@ -168,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                             ),
                             hintText: 'Contraseña',
-                            hintStyle: TextStyle(color: Colors.grey),
+                            hintStyle: const TextStyle(color: Colors.grey),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -185,13 +195,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             return null;
                           },
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Container(
                           width: double.infinity,
                           height: 50,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            gradient: LinearGradient(
+                            gradient: const LinearGradient(
                               colors: [Color.fromARGB(255, 109, 174, 239), Color.fromARGB(255, 50, 151, 246)],
                             ),
                           ),
@@ -201,8 +211,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 // Redirigir a la pantalla principal al iniciar sesión
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (context) => MainScreen()), // Cambiar a MainScreen
+                                  MaterialPageRoute(builder: (context) => const MainScreen()), // Cambiar a MainScreen
                                 );
+                                ApiService.guardarUserId("1");
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -212,19 +223,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            child: Text('Iniciar', style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
+                            child: const Text('Iniciar', style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Center(
                           child: TextButton(
                             onPressed: () {
                               // Añadir lógica para "Olvidaste tu contraseña"
                             },
-                            child: Text('¿Olvidaste la contraseña?', style: TextStyle(color: Colors.black, fontSize: 14, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
+                            child: const Text('¿Olvidaste la contraseña?', style: TextStyle(color: Colors.black, fontSize: 14, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
                           ),
                         ),
-                        Row(
+                        const Row(
                           children: [
                             Expanded(child: Divider(thickness: 1, color: Colors.black)),
                             Padding(
@@ -234,20 +245,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             Expanded(child: Divider(thickness: 1, color: Colors.black)),
                           ],
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text('¿No tienes cuenta?', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
+                              const Text('¿No tienes cuenta?', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
                               TextButton(
                                 onPressed: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => RegisterScreen()), // Cambiar a RegisterScreen
+                                    MaterialPageRoute(builder: (context) => const RegisterScreen()), // Cambiar a RegisterScreen
                                   );
                                 },
-                                child: Text('Registrar', style: TextStyle(color: const Color.fromARGB(255, 50, 151, 245), fontSize: 14, fontFamily: 'Manrope',)),
+                                child: const Text('Registrar', style: TextStyle(color: Color.fromARGB(255, 50, 151, 245), fontSize: 14, fontFamily: 'Manrope',)),
                               ),
                             ],
                           ),
@@ -267,7 +278,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
 // Pantalla de Registro
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
@@ -284,17 +298,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Background(),
+          const Background(),
           Align(
             alignment: Alignment.bottomCenter,
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 0),
+                padding: const EdgeInsets.symmetric(horizontal: 0),
                 child: Container(
-                  padding: EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(20.0),
                   height: MediaQuery.of(context).size.height * 0.75,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(45),
                       topRight: Radius.circular(45),
                     ),
@@ -306,7 +320,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Colors.black26,
                         blurRadius: 10,
@@ -319,10 +333,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Registrar', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black, fontFamily: 'Manrope',)),
-                        SizedBox(height: 20),
-                        Text('Correo', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
-                        SizedBox(height: 8),
+                        const Text('Registrar', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black, fontFamily: 'Manrope',)),
+                        const SizedBox(height: 20),
+                        const Text('Correo', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
+                        const SizedBox(height: 8),
                         TextFormField(
                           controller: _emailController,
                           validator: (value) {
@@ -338,9 +352,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             return null;
                           },
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.mail),
+                            prefixIcon: const Icon(Icons.mail),
                             hintText: 'correo@gmail.com',
-                            hintStyle: TextStyle(color: Colors.grey),
+                            hintStyle: const TextStyle(color: Colors.grey),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -348,9 +362,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             fillColor: Colors.white.withOpacity(0.7),
                           ),
                         ),
-                        SizedBox(height: 20),
-                        Text('Contraseña', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 20),
+                        const Text('Contraseña', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
+                        const SizedBox(height: 8),
                         TextFormField(
                           controller: _passwordController,
                           obscureText: !_isPasswordVisible,
@@ -361,7 +375,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             return null;
                           },
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.lock),
+                            prefixIcon: const Icon(Icons.lock),
                             suffixIcon: IconButton(
                               icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
                               onPressed: () {
@@ -371,7 +385,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               },
                             ),
                             hintText: 'Contraseña',
-                            hintStyle: TextStyle(color: Colors.grey),
+                            hintStyle: const TextStyle(color: Colors.grey),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -379,9 +393,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             fillColor: Colors.white.withOpacity(0.7),
                           ),
                         ),
-                        SizedBox(height: 20),
-                        Text('Confirmar Contraseña', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 20),
+                        const Text('Confirmar Contraseña', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',)),
+                        const SizedBox(height: 8),
                         TextFormField(
                           controller: _confirmPasswordController,
                           obscureText: !_isConfirmPasswordVisible,
@@ -395,7 +409,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             return null;
                           },
                           decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.lock),
+                            prefixIcon: const Icon(Icons.lock),
                             suffixIcon: IconButton(
                               icon: Icon(_isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off),
                               onPressed: () {
@@ -405,7 +419,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               },
                             ),
                             hintText: 'Confirmar contraseña',
-                            hintStyle: TextStyle(color: Colors.grey),
+                            hintStyle: const TextStyle(color: Colors.grey),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -413,13 +427,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             fillColor: Colors.white.withOpacity(0.7),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Container(
                           width: double.infinity,
                           height: 50,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            gradient: LinearGradient(
+                            gradient: const LinearGradient(
                               colors: [Color.fromARGB(255, 109, 174, 239), Color.fromARGB(255, 50, 151, 246)],
                             ),
                           ),
@@ -428,7 +442,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (_formKey.currentState!.validate()) {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => CuestionarioScreen()),
+                                  MaterialPageRoute(builder: (context) => const CuestionarioScreen()),
                                 );
                               }
                             },
@@ -439,11 +453,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: Text('Registrar', style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
+                            child: const Text('Registrar', style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
                           ),
                         ),
-                        SizedBox(height: 20),
-                        Row(
+                        const SizedBox(height: 20),
+                        const Row(
                           children: [
                             Expanded(child: Divider(thickness: 1, color: Colors.black)),
                             Padding(
@@ -453,20 +467,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             Expanded(child: Divider(thickness: 1, color: Colors.black)),
                           ],
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text('¿Ya tienes cuenta?', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
+                              const Text('¿Ya tienes cuenta?', style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: 'Manrope',fontWeight: FontWeight.bold)),
                               TextButton(
                                 onPressed: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => LoginScreen()), // Cambiar a RegisterScreen
+                                    MaterialPageRoute(builder: (context) => const LoginScreen()), // Cambiar a RegisterScreen
                                   );
                                 },
-                                child: Text('Iniciar sesión', style: TextStyle(color: Colors.blue, fontSize: 14, fontFamily: 'Manrope',)),
+                                child: const Text('Iniciar sesión', style: TextStyle(color: Colors.blue, fontSize: 14, fontFamily: 'Manrope',)),
                               ),
                             ],
                           ),

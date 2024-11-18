@@ -6,13 +6,17 @@ import 'package:intl/intl.dart';
 import 'package:baymind/frontend/widgets/colors.dart';
 
 class PerfilScreen extends StatefulWidget {
+  const PerfilScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _PerfilScreenState createState() => _PerfilScreenState();
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
   File? _profileImage;
   final ImagePicker _picker = ImagePicker();
+  // ignore: prefer_final_fields
   TextEditingController _nameController = TextEditingController();
   DateTime? _birthDate;
   bool _notificationsEnabled = true;
@@ -37,9 +41,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
   Future<void> _selectBirthDate() async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().subtract(Duration(days: 365 * 18)), // Mayor de 18 años
+      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)), // Mayor de 18 años
       firstDate: DateTime(1900),
-      lastDate: DateTime.now().subtract(Duration(days: 365 * 18)),
+      lastDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
     );
 
     if (pickedDate != null) {

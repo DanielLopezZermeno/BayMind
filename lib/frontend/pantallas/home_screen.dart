@@ -1,57 +1,110 @@
-import 'package:baymind/frontend/menu/navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:baymind/frontend/widgets/colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:baymind/frontend/pantallas/estado_screen.dart';
 import 'package:baymind/main.dart';
-class MoodBarChart extends StatelessWidget {
+import 'package:baymind/servicios/api_service.dart';
+
+
+class MoodBarChart extends StatefulWidget {
   const MoodBarChart({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
+  _MoodBarChartState createState() => _MoodBarChartState();
+}
+
+class _MoodBarChartState extends State<MoodBarChart> {
+
+  @override
   Widget build(BuildContext context) {
-    return BarChart(
-      BarChartData(
-        barTouchData: barTouchData,
-        titlesData: titlesData,
-        borderData: borderData,
-        barGroups: barGroups,
-        gridData: const FlGridData(show: false),
-        alignment: BarChartAlignment.spaceAround,
-        maxY: 20,
-      ),
+    return FutureBuilder<List<BarChartGroupData>>(
+      // Llamamos al método obtenerDatosBarChart desde ApiService
+      future: ApiService.obtenerDatosBarChart(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return const Center(child: Text("Error al cargar los datos"));
+        } else if (snapshot.hasData) {
+          // Si tenemos datos, los usamos para el gráfico
+          final barGroups = snapshot.data!;
+          return BarChart(
+            BarChartData(
+              barTouchData: barTouchData,
+              titlesData: titlesData,
+              borderData: borderData,
+              barGroups: barGroups,
+              gridData: const FlGridData(show: false),
+              alignment: BarChartAlignment.spaceAround,
+              maxY: 20,
+            ),
+          );
+        } else {
+          // Si no hay datos (caso de error o vacío), mostramos el gráfico vacío con 0s
+          return const Center(child: Text("No hay datos disponibles"));
+        }
+      },
     );
   }
 
+  // Datos de interacción al tocar las barras
   BarTouchData get barTouchData => BarTouchData(
-        enabled: true,
-        touchTooltipData: BarTouchTooltipData(
-          //tooltipBgColor: Colors.blueGrey,
-          tooltipPadding: const EdgeInsets.all(8),
-          tooltipMargin: 8,
-          getTooltipItem: (
-            BarChartGroupData group,
-            int groupIndex,
-            BarChartRodData rod,
-            int rodIndex,
-          ) {
-            return BarTooltipItem(
-              rod.toY.round().toString(),
-              const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            );
-          },
+  enabled: true,
+  touchTooltipData: BarTouchTooltipData(
+    tooltipPadding: const EdgeInsets.all(8),
+    tooltipMargin: 8,
+    getTooltipItem: (
+      BarChartGroupData group,
+      int groupIndex,
+      BarChartRodData rod,
+      int rodIndex,
+    ) {
+      String tooltipText;
+      switch (rod.toY.round()) {
+        case 0:
+          tooltipText = 'Sin registro';
+          break;
+        case 1:
+          tooltipText = 'Tormenta';
+          break;
+        case 2:
+          tooltipText = 'Día nublado';
+          break;
+        case 3:
+          tooltipText = 'Olas calmadas';
+          break;
+        case 4:
+          tooltipText = 'Arcoíris';
+          break;
+        case 5:
+          tooltipText = 'Día soleado';
+          break;
+        default:
+          tooltipText = 'Valor desconocido';
+          break;
+      }
+
+      return BarTooltipItem(
+        tooltipText,
+        const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
         ),
       );
+    },
+  ),
+);
 
+
+  // Títulos del gráfico
   Widget getTitles(double value, TitleMeta meta) {
-    final style = const TextStyle(
+    const style = TextStyle(
       shadows: [
         Shadow(
-          offset: Offset(2.0, 2.0), // Desplazamiento de la sombra
-          blurRadius: 3.0, // Radio de desenfoque de la sombra
-          color: Colors.grey, // Color de la sombra
+          offset: Offset(2.0, 2.0),
+          blurRadius: 3.0,
+          color: Colors.grey,
         ),
       ],
       color: Colors.blueGrey,
@@ -92,6 +145,7 @@ class MoodBarChart extends StatelessWidget {
     );
   }
 
+  // Datos de los títulos en el gráfico
   FlTitlesData get titlesData => FlTitlesData(
         show: true,
         bottomTitles: AxisTitles(
@@ -112,89 +166,45 @@ class MoodBarChart extends StatelessWidget {
         ),
       );
 
-  FlBorderData get borderData => FlBorderData(
-        show: false,
-      );
-
-  LinearGradient get _barsGradient => const LinearGradient(
-        colors: [
-          AppColors.azul,
-          AppColors.morado,
-        ],
-        begin: Alignment.bottomCenter,
-        end: Alignment.topCenter,
-      );
-
-  List<BarChartGroupData> get barGroups => [
-        BarChartGroupData(
-          x: 0,
-          barRods: [
-            BarChartRodData(
-              toY: 10,
-              gradient: _barsGradient,
-            )
-          ],
-        ),
-        BarChartGroupData(
-          x: 1,
-          barRods: [
-            BarChartRodData(
-              toY: 8,
-              gradient: _barsGradient,
-            )
-          ],
-        ),
-        BarChartGroupData(
-          x: 2,
-          barRods: [
-            BarChartRodData(
-              toY: 14,
-              gradient: _barsGradient,
-            )
-          ],
-        ),
-        BarChartGroupData(
-          x: 3,
-          barRods: [
-            BarChartRodData(
-              toY: 15,
-              gradient: _barsGradient,
-            )
-          ],
-        ),
-        BarChartGroupData(
-          x: 4,
-          barRods: [
-            BarChartRodData(
-              toY: 9,
-              gradient: _barsGradient,
-            )
-          ],
-        ),
-        BarChartGroupData(
-          x: 5,
-          barRods: [
-            BarChartRodData(
-              toY: 11,
-              gradient: _barsGradient,
-            )
-          ],
-        ),
-        BarChartGroupData(
-          x: 6,
-          barRods: [
-            BarChartRodData(
-              toY: 13,
-              gradient: _barsGradient,
-            )
-          ],
-        ),
-      ];
+  // Datos de borde (en este caso no se muestra el borde)
+  FlBorderData get borderData => FlBorderData(show: false);
 }
 
-class HomeScreen extends StatelessWidget {
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _HomeScreen createState() => _HomeScreen();
+}
+
+class _HomeScreen extends State<HomeScreen>{
+  String fraseDelDia = 'Cargando frase...';
+  @override
+    void initState() {
+      super.initState();
+      obtenerFraseDelDia();
+    }
+  Future<void> obtenerFraseDelDia() async {
+    // Aquí llamas a tu API o servicio para obtener la frase
+    try {
+      // Supongamos que tienes una función en api_service.dart que obtiene la frase
+      String nuevaFrase = await ApiService.obtenerFraseAleatoria();
+      
+      setState(() {
+        fraseDelDia = nuevaFrase;
+      });
+    } catch (error) {
+      setState(() {
+        fraseDelDia = 'Hoy no hay frase, pero ánimo';
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    
+    DateTime today = DateTime.now();
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.only(top: 42),
@@ -218,7 +228,7 @@ class HomeScreen extends StatelessWidget {
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '¡Hola preciosa!',
+                    '¡Hola hermosura!',
                     style: TextStyle(
                         fontSize: 40,
                         fontWeight: FontWeight.bold,
@@ -230,6 +240,7 @@ class HomeScreen extends StatelessWidget {
                 // Primer cuadro: Saludo y cita
                 Container(
                   height: 100,
+                  width: MediaQuery.of(context).size.width * 0.90,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(30),
@@ -251,12 +262,12 @@ class HomeScreen extends StatelessWidget {
                       color: Colors.white, // Fondo del contenido
                     ),
                     padding: const EdgeInsets.all(16), // Padding interno
-                    child: const Column(
+                    child:  Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '"Sé tú mismo. Todos los demás ya están ocupados" - Oscar Wilde.',
-                          style: TextStyle(
+                          fraseDelDia,
+                          style: const TextStyle(
                               shadows: [
                                 Shadow(
                                   offset: Offset(
@@ -322,7 +333,7 @@ class HomeScreen extends StatelessWidget {
                               onPressed: () {
                                 Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EstadoScreen()),
+                      MaterialPageRoute(builder: (context) => EstadoScreen(dayNumber: today.day.toString(), month: today.month.toString(),)),
                     );
                               },
                               style: TextButton.styleFrom(
@@ -435,6 +446,7 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20),
+                // ignore: sized_box_for_whitespace
                 Container(
                   height: MediaQuery.of(context).size.height * 0.42,
                   width: MediaQuery.of(context).size.width * 0.90,

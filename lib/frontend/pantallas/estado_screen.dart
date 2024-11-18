@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:baymind/frontend/widgets/estado_widgets.dart';
 import 'package:baymind/frontend/widgets/colors.dart';
 class EstadoScreen extends StatefulWidget {
+  final String month;
+  final String dayNumber;
+  const EstadoScreen({super.key, required this.month, required this.dayNumber});
   @override
+  // ignore: library_private_types_in_public_api
   _EstadoScreenState createState() => _EstadoScreenState();
 }
 
 class _EstadoScreenState extends State<EstadoScreen> with SingleTickerProviderStateMixin {
+  
   double progress = 0.0;
   late final AnimationController _animationController;
 
@@ -15,7 +20,7 @@ class _EstadoScreenState extends State<EstadoScreen> with SingleTickerProviderSt
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 800),
     )..forward();
   }
 
@@ -24,7 +29,7 @@ class _EstadoScreenState extends State<EstadoScreen> with SingleTickerProviderSt
     _animationController.dispose();
     super.dispose();
   }
-
+  
   List<Color> _getGradientColors() {
     if (progress == 0.0) return [const Color.fromARGB(255, 122, 105, 127), const Color.fromRGBO(137, 111, 145, 1), Colors.white];
     if (progress <= 0.25) return [const Color.fromRGBO(202, 163, 214, 1), const Color.fromRGBO(180,145,191, 1),Colors.white];
@@ -34,7 +39,7 @@ class _EstadoScreenState extends State<EstadoScreen> with SingleTickerProviderSt
   }
 
   Color _getBorderColor() {
-    if (progress == 0.0) return Color.fromARGB(255, 122, 105, 127);
+    if (progress == 0.0) return const Color.fromARGB(255, 122, 105, 127);
     if (progress <= 0.25) return Colors.purple[300]!;
     if (progress <= 0.5) return Colors.lightBlue[300]!;
     if (progress <= 0.75) return Colors.teal[300]!;
@@ -50,18 +55,18 @@ class _EstadoScreenState extends State<EstadoScreen> with SingleTickerProviderSt
   }
 
   Color _getButtonColor() {
-    if (progress == 0.0) return Color.fromRGBO(137, 111, 145, 1);
-    if (progress <= 0.25) return  Color.fromRGBO(202, 163, 214, 1);
-    if (progress <= 0.5) return  Color.fromRGBO(50, 151, 245, 1);
-    if (progress <= 0.75) return Color.fromRGBO(190, 237, 179, 0.4);
-    return Color.fromRGBO(255, 254, 177, 0.73);
+    if (progress == 0.0) return const Color.fromRGBO(137, 111, 145, 1);
+    if (progress <= 0.25) return  const Color.fromRGBO(202, 163, 214, 1);
+    if (progress <= 0.5) return  const Color.fromRGBO(50, 151, 245, 1);
+    if (progress <= 0.75) return const Color.fromRGBO(190, 237, 179, 0.4);
+    return const Color.fromRGBO(255, 254, 177, 0.73);
   }
   Color _getanimatedColor() {
-    if (progress == 0.0) return Color.fromARGB(255, 162, 0, 211);
-    if (progress <= 0.25) return  Color.fromARGB(255, 185, 39, 230);
-    if (progress <= 0.5) return  Color.fromRGBO(16, 132, 240, 1);
-    if (progress <= 0.75) return Color.fromRGBO(58, 255, 14, 0.795);
-    return Color.fromRGBO(247, 244, 66, 1);
+    if (progress == 0.0) return const Color.fromARGB(255, 162, 0, 211);
+    if (progress <= 0.25) return  const Color.fromARGB(255, 185, 39, 230);
+    if (progress <= 0.5) return  const Color.fromRGBO(16, 132, 240, 1);
+    if (progress <= 0.75) return const Color.fromRGBO(58, 255, 14, 0.795);
+    return const Color.fromRGBO(247, 244, 66, 1);
   }
   List<double> _getanimated(){
     if (progress == 0.0) return [900,1100,7,25,100];
@@ -87,7 +92,7 @@ Widget build(BuildContext context) {
         ),
       child: Center(
         child: SlideTransition(
-          position: Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0)).animate(
+          position: Tween<Offset>(begin: const Offset(0, 1), end: const Offset(0, 0)).animate(
             CurvedAnimation(
               parent: _animationController,
               curve: Curves.easeInOut,
@@ -103,10 +108,13 @@ Widget build(BuildContext context) {
               animatedColor: _getanimatedColor(),
               animado: _getanimated(),
               progress: progress,
+              dayNumber: widget.dayNumber,
+              month: widget.month,
               onSliderChanged: (value) {
                 setState(() {
                   progress = value;
                 });
+              
               },
             ),
           ),

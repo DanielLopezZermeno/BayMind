@@ -7,7 +7,10 @@ import 'package:baymind/frontend/menu/navigation_bar.dart';
 import 'package:baymind/frontend/pantallas/scroll_design.dart';
 import 'package:baymind/servicios/notification_services.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,13 +21,16 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
 
       ),
-      home: ScrollScreen(),
+      home: const ScrollScreen(),
     );
   }
 }
 
 class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _MainScreenState createState() => _MainScreenState();
 }
 class NavigationController {
@@ -41,11 +47,11 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    HomeScreen(),
-    CalendarioScreen(),
-    BaymindScreen(),
-    AvanceScreen(),
-    PerfilScreen(),
+    const HomeScreen(),
+    const CalendarioScreen(),
+    const BaymindScreen(),
+    const AvanceScreen(),
+    const PerfilScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -87,5 +93,6 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
   await initNotificactions();
-  runApp(MyApp());
+  await SharedPreferences.getInstance();
+  runApp(const MyApp());
 }

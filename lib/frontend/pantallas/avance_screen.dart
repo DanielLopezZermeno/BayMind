@@ -1,10 +1,161 @@
 import 'package:baymind/frontend/widgets/colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:baymind/servicios/api_service.dart';
 import 'package:intl/intl.dart';
 
-class AvanceScreen extends StatefulWidget {
+class MoodLineChart extends StatefulWidget {
+  final String
+      chartType; // Agregamos este parámetro para decidir el tipo de gráfico
+
+  // Modificamos el constructor para aceptar el tipo de gráfico
+  const MoodLineChart({super.key, required this.chartType});
+
   @override
+  // ignore: library_private_types_in_public_api
+  _MoodLineChartState createState() => _MoodLineChartState();
+}
+
+class _MoodLineChartState extends State<MoodLineChart> {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<LineChartBarData>>(
+      future: ApiService.obtenerDatosLineChart(widget.chartType),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return const Center(child: Text("Error al cargar los datos"));
+        } else if (snapshot.hasData) {
+          final lineData = snapshot.data!;
+
+          return LineChart(
+            LineChartData(
+              gridData: const FlGridData(show: false),
+              borderData: FlBorderData(show: false),
+              titlesData: getTitlesData(
+                  widget.chartType), // Usamos el tipo de gráfico proporcionado
+              lineBarsData: lineData,
+              lineTouchData: lineTouchData,
+              minY: 0,
+              maxY: 5,
+            ),
+          );
+        } else {
+          return const Center(child: Text("No hay datos disponibles"));
+        }
+      },
+    );
+  }
+
+  // Datos de interacción al tocar las líneas
+  LineTouchData get lineTouchData => LineTouchData(
+        touchTooltipData: LineTouchTooltipData(
+          tooltipPadding: const EdgeInsets.all(8),
+          tooltipMargin: 8,
+          getTooltipItems: (List<LineBarSpot> spots) {
+            return spots.map((spot) {
+              String tooltipText;
+              switch (spot.y.toInt()) {
+                case 0:
+                  tooltipText = 'Sin registro';
+                  break;
+                case 1:
+                  tooltipText = 'Tormenta';
+                  break;
+                case 2:
+                  tooltipText = 'Día nublado';
+                  break;
+                case 3:
+                  tooltipText = 'Olas calmadas';
+                  break;
+                case 4:
+                  tooltipText = 'Arcoíris';
+                  break;
+                case 5:
+                  tooltipText = 'Día soleado';
+                  break;
+                default:
+                  tooltipText = 'Valor desconocido';
+                  break;
+              }
+              return LineTooltipItem(
+                tooltipText,
+                const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              );
+            }).toList();
+          },
+        ),
+      );
+
+  // Generamos los títulos para el gráfico según el tipo
+  Widget getTitles(double value, TitleMeta meta, String type) {
+    DateTime today = DateTime.now();
+    DateFormat dateFormat;
+    String title = "";
+
+    if (type == 'days') {
+      // Últimos 7 días desde el día de hoy hacia atrás
+      DateTime date = today.subtract(Duration(days: 6 - value.toInt()));
+      title = "${date.day}/${date.month}";
+    } else if (type == 'weeks') {
+      // Últimas 3 semanas desde el día de hoy hacia atrás
+      DateTime startOfWeek =
+          today.subtract(Duration(days: (7 * (7 - value.toInt()))));
+      dateFormat = DateFormat('dd/MM');
+      title = dateFormat.format(startOfWeek);
+    } else if (type == 'months') {
+      // Últimos 5 meses desde el mes actual hacia atrás
+      DateTime month =
+          DateTime(today.year, today.month - 2 - (4 - value.toInt()), 1);
+      dateFormat = DateFormat('MMM ');
+      title = dateFormat.format(month);
+    }
+
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      space: 4,
+      child: Text(title,
+          style: const TextStyle(
+              fontSize: 12,
+              color: Colors.white,
+              fontFamily: 'Manrope',
+              fontWeight: FontWeight.bold)),
+    );
+  }
+
+  // Método para generar los datos de títulos en el gráfico
+  FlTitlesData getTitlesData(String type) {
+    return FlTitlesData(
+      show: true,
+      bottomTitles: AxisTitles(
+        sideTitles: SideTitles(
+          showTitles: true,
+          reservedSize: 30,
+          getTitlesWidget: (value, meta) => getTitles(value, meta, type),
+        ),
+      ),
+      leftTitles: const AxisTitles(
+        sideTitles: SideTitles(showTitles: false),
+      ),
+      topTitles: const AxisTitles(
+        sideTitles: SideTitles(showTitles: false),
+      ),
+      rightTitles: const AxisTitles(
+        sideTitles: SideTitles(showTitles: false),
+      ),
+    );
+  }
+}
+
+class AvanceScreen extends StatefulWidget {
+  const AvanceScreen({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
   _AvanceScreenState createState() => _AvanceScreenState();
 }
 
@@ -18,69 +169,21 @@ class _AvanceScreenState extends State<AvanceScreen>
     _tabController = TabController(length: 3, vsync: this);
   }
 
-  // Generar datos para los últimos 7 días (5 valores posibles)
-  List<FlSpot> _getDailyData() {
-    return List.generate(7, (index) {
-      return FlSpot(
-        index.toDouble(),
-        (index % 6).toDouble(), // Datos simulados, valores entre 0 y 5
-      );
-    });
-  }
-
-  // Generar datos para las últimas 8 semanas (5 valores posibles)
-  List<FlSpot> _getWeeklyData() {
-    return List.generate(8, (index) {
-      return FlSpot(
-        index.toDouble(),
-        (index % 6).toDouble(), // Datos simulados, valores entre 0 y 5
-      );
-    });
-  }
-
-  // Generar datos para los últimos 5 meses (5 valores posibles)
-  List<FlSpot> _getMonthlyData() {
-    return List.generate(8, (index) {
-      return FlSpot(
-        index.toDouble(),
-        (index % 6).toDouble(), // Datos simulados, valores entre 0 y 5
-      );
-    });
-  }
-
-  // Formatear la fecha según el periodo seleccionado
-  String _formatDate(int index, String type) {
-    DateTime today = DateTime.now();
-    DateFormat dateFormat;
-
-    switch (type) {
-      case 'Días':
-        DateTime date = today.subtract(Duration(days: 6 - index));
-        dateFormat = DateFormat('dd/MM');
-        return dateFormat.format(date);
-      case 'Semanas':
-        DateTime startOfWeek =
-            today.subtract(Duration(days: (7 * (7 - index))));
-        dateFormat = DateFormat('dd/MM');
-        return '${dateFormat.format(startOfWeek)}';
-      case 'Meses':
-        DateTime month = DateTime(today.year, today.month - (4 - index), 1);
-        dateFormat = DateFormat('MMM ');
-        return dateFormat.format(month);
-      default:
-        return '';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('¡Es un gran progreso!',
-            style:
-                TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Manrope', color: AppColors.morado, fontSize: 24)),
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Manrope',
+                color: AppColors.morado,
+                fontSize: 24)),
         bottom: TabBar(
           controller: _tabController,
+          labelStyle: const TextStyle(
+            fontFamily: 'Manrope',
+          ),
           tabs: const [
             Tab(text: 'Días'),
             Tab(text: 'Semanas'),
@@ -107,85 +210,110 @@ class _AvanceScreenState extends State<AvanceScreen>
           children: [
             // Aquí controlas el tamaño con SizedBox
             SizedBox(
-              height: 250, // Ajusta la altura aquí según lo necesites
-              child: _buildLineChart(_getDailyData(), 'Días'),
+              height: 50, // Ajusta la altura aquí según lo necesites
+              child: Container(
+                  margin: const EdgeInsets.only(
+                      top: 80,
+                      bottom: 80,
+                      left: 10,
+                      right: 10), // Márgenes alrededor del gráfico
+                  padding: const EdgeInsets.all(
+                      38.0), // Relleno interno del contenedor
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(
+                        255, 255, 255, 255), // Color de fondo del contenedor
+                    borderRadius:
+                        BorderRadius.circular(12.0), // Bordes redondeados
+                    gradient: const LinearGradient(
+                      colors: [
+                        AppColors.morado,
+                        AppColors.azul,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: const MoodLineChart(chartType: 'days')),
             ),
             SizedBox(
               height: 250, // Ajusta la altura aquí según lo necesites
-              child: _buildLineChart(_getWeeklyData(), 'Semanas'),
+              child: Container(
+                  margin: const EdgeInsets.only(
+                      top: 80,
+                      bottom: 80,
+                      left: 10,
+                      right: 10), // Márgenes alrededor del gráfico
+                  padding: const EdgeInsets.all(
+                      38.0), // Relleno interno del contenedor
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(
+                        255, 255, 255, 255), // Color de fondo del contenedor
+                    borderRadius:
+                        BorderRadius.circular(12.0), // Bordes redondeados
+                    gradient: const LinearGradient(
+                      colors: [
+                        AppColors.morado,
+                        AppColors.azul,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: const MoodLineChart(
+                    chartType: 'weeks',
+                  )),
             ),
             SizedBox(
               height: 250, // Ajusta la altura aquí según lo necesites
-              child: _buildLineChart(_getMonthlyData(), 'Meses'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Método para construir el gráfico dentro de un Container
-  Widget _buildLineChart(List<FlSpot> data, String type) {
-    return Container(
-      margin: const EdgeInsets.only(
-          top: 80, bottom: 80,left: 10, right: 10), // Márgenes alrededor del gráfico
-      padding: const EdgeInsets.all(38.0), // Relleno interno del contenedor
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(
-            255, 255, 255, 255), // Color de fondo del contenedor
-        borderRadius: BorderRadius.circular(12.0), // Bordes redondeados
-        border: Border.all(
-          color: AppColors.azul, // Color del borde
-          width: 2, // Grosor del borde
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: Offset(0, 6),
-          ),
-        ],
-      ),
-      child: LineChart(
-        LineChartData(
-          gridData: FlGridData(
-            show: true,
-            verticalInterval:
-                1, // Define el intervalo entre las líneas verticales
-            horizontalInterval:
-                1, // Define el intervalo entre las líneas horizontales (1 en 1)
-          ),
-          titlesData: FlTitlesData(
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 30,
-              ),
-            ),
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 22,
-                getTitlesWidget: (value, meta) {
-                  String label = _formatDate(value.toInt(), type);
-                  return Text(label, style: const TextStyle(fontSize: 10));
-                },
-              ),
-            ),
-          ),
-          borderData: FlBorderData(
-            show: true,
-            border: Border.all(color: Colors.grey),
-          ),
-          lineBarsData: [
-            LineChartBarData(
-              spots: data,
-              isCurved: true,
-              color: AppColors.morado,
-              barWidth: 3,
-              dotData: FlDotData(show: true),
-              //belowBarData: BarAreaData(show: true, color: Colors.purple.withOpacity(0.2)),
+              child: Container(
+                  margin: const EdgeInsets.only(
+                      top: 80,
+                      bottom: 80,
+                      left: 10,
+                      right: 10), // Márgenes alrededor del gráfico
+                  padding: const EdgeInsets.all(
+                      38.0), // Relleno interno del contenedor
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(
+                        255, 255, 255, 255), // Color de fondo del contenedor
+                    borderRadius:
+                        BorderRadius.circular(12.0), // Bordes redondeados
+                    gradient: const LinearGradient(
+                      colors: [
+                        AppColors.morado,
+                        AppColors.azul,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: const MoodLineChart(
+                    chartType: 'months',
+                  )),
             ),
           ],
         ),

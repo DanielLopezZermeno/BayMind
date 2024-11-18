@@ -5,7 +5,10 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:baymind/frontend/widgets/colors.dart';
 
 class BaymindScreen extends StatefulWidget {
+  const BaymindScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _BayMindScreen createState() => _BayMindScreen();
 }
 
@@ -37,7 +40,7 @@ class _BayMindScreen extends State<BaymindScreen> {
       _messages.add({"sender": "ai", "text": "Estoy analizando tu mensaje..."});
     });
 
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       setState(() {
         _messages.removeLast();
         _messages.add({"sender": "ai", "text": "Entiendo, cuéntame más sobre eso."});

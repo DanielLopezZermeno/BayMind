@@ -18,6 +18,9 @@ dependencies:
   avatar_glow: ^2.0.0
   speech_to_text: ^7.0.0
   flutter_local_notifications: ^18.0.1
+  mongo_dart: ^0.10.3
+  http: ^1.2.2
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:

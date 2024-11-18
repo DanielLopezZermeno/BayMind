@@ -1,6 +1,7 @@
 import 'package:baymind/frontend/pantallas/estado_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:baymind/frontend/widgets/colors.dart';
+import 'package:baymind/servicios/api_service.dart';
 
 class RegistroCard extends StatelessWidget {
   final String dayName;
@@ -9,19 +10,72 @@ class RegistroCard extends StatelessWidget {
   final bool isToday;
 
   const RegistroCard({
-    Key? key,
+    super.key,
     required this.dayName,
     required this.month,
     required this.dayNumber,
     this.isToday = false,
-  }) : super(key: key);
+  });
+
+  Future<String> obtenerDatos() async {
+    // Aquí llamas a tu API o servicio para obtener la frase
+    try {
+      // Supongamos que tienes una función en api_service.dart que obtiene la frase
+      String estadoanimo = await ApiService.obtenerDatosTarjeta(dayName, month);
+      return estadoanimo;
+    } catch (error) {
+      String estadoanimo = "Sin registro";
+      return estadoanimo;
+    }
+  }
+
+  List<Color> _getGradientColors(String estado) {
+    switch (estado) {
+      case "Tormenta":
+        return [
+          const Color.fromARGB(255, 122, 105, 127),
+          const Color.fromRGBO(137, 111, 145, 1),
+          Colors.white
+        ];
+      case "Día nublado":
+        return [
+          const Color.fromRGBO(202, 163, 214, 1),
+          const Color.fromRGBO(180, 145, 191, 1),
+          Colors.white
+        ];
+      case "Olas calmadas":
+        return [
+          const Color.fromRGBO(50, 151, 245, 1),
+          const Color.fromRGBO(134, 162, 224, 1),
+          Colors.white
+        ];
+      case "Arcoíris":
+        return [
+          const Color.fromRGBO(190, 237, 179, 0.4),
+          const Color.fromRGBO(134, 224, 217, 1),
+          Colors.white
+        ];
+      case "Día soleado":
+        return [
+          const Color.fromRGBO(255, 254, 177, 0.73),
+          const Color.fromRGBO(162, 231, 198, 0.7),
+          const Color.fromRGBO(134, 224, 217, 1),
+          Colors.white
+        ];
+      default:
+        return [
+          const Color.fromARGB(100, 202, 163, 214),
+          const Color.fromARGB(100, 50, 151, 245)
+        ];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width *
           0.9, // 90% del ancho de la pantalla
-      margin: EdgeInsets.symmetric(horizontal: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         gradient: LinearGradient(
@@ -44,13 +98,13 @@ class RegistroCard extends StatelessWidget {
           children: [
             // Parte superior - Fecha
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 borderRadius: BorderRadius.vertical(
                     top: Radius.circular(
                         12)), // Bordes redondeados en la parte superior
               ),
               width: double.infinity,
-              padding: EdgeInsets.only(
+              padding: const EdgeInsets.only(
                   top: 20), // Espacio superior para centrar el contenido
               child: Column(
                 mainAxisAlignment: MainAxisAlignment
@@ -62,17 +116,17 @@ class RegistroCard extends StatelessWidget {
                     children: [
                       Text(
                         dayName,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Manrope',
                           fontSize: 20, // Ajustar tamaño de fuente
                           color: AppColors.morado,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(width: 8), // Espacio entre los dos textos
+                      const SizedBox(width: 8), // Espacio entre los dos textos
                       Text(
                         month,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Manrope',
                           fontSize: 20, // Ajustar tamaño de fuente
                           color: AppColors.morado,
@@ -97,35 +151,99 @@ class RegistroCard extends StatelessWidget {
 
             // Parte del medio - "Sin registro"
             Flexible(
-              child: Container(
-                width:
-                    MediaQuery.of(context).size.width * 0.8, // Ajusta el ancho
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color.fromARGB(100, 202, 163, 214),
-                      const Color.fromARGB(100, 50, 151, 245)
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(30), // Bordes redondeados
-                ),
-                child: Center(
-                  child: Text(
-                    'Sin registro',
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                        fontSize: MediaQuery.of(context).size.height * 0.05,
-                        color: Colors.white), // Tamaño dinámico
-                  ),
-                ),
+              child: FutureBuilder<String>(
+                future: obtenerDatos(), // Llamada a tu función que devuelve Future<String>
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    // Indicador de carga mientras se obtienen los datos
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color.fromARGB(100, 202, 163, 214),
+          Color.fromARGB(100, 50, 151, 245)], // Placeholder mientras carga
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    // Si hay un error, muestra un color de error
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.red, Colors.black],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Error al cargar datos',
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: MediaQuery.of(context).size.height * 0.05,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    );
+                  } else if (snapshot.hasData) {
+                    // Obtener los colores basados en el dato
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: _getGradientColors(snapshot.data!), // Aquí pasas el dato
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Center(
+                        child: Text(
+                          snapshot.data ?? 'Sin datos',
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: MediaQuery.of(context).size.height * 0.05,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    );
+                  } else {
+                    // En caso de no haber datos
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.white, Colors.blueGrey],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Sin datos',
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: MediaQuery.of(context).size.height * 0.05,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                },
               ),
             ),
 
             // Parte inferior - Botón
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 borderRadius: BorderRadius.vertical(
                   bottom: Radius.circular(20),
                 ), // Bordes redondeados en la parte inferior
@@ -139,7 +257,9 @@ class RegistroCard extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EstadoScreen()),
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              EstadoScreen(dayNumber: dayNumber, month: month)),
                     );
                   },
                   child: Container(
@@ -162,14 +282,14 @@ class RegistroCard extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: 'Manrope',
                         color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
                       ),
                     ),
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

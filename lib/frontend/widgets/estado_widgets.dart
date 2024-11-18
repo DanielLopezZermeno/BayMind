@@ -1,7 +1,7 @@
-import 'package:baymind/frontend/widgets/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_background/animated_background.dart';
 import 'package:baymind/servicios/notification_services.dart';
+import 'package:baymind/servicios/api_service.dart';
 
 class EstadoCard extends StatefulWidget {
   final List<Color> gradientColors;
@@ -12,9 +12,11 @@ class EstadoCard extends StatefulWidget {
   final List<double> animado;
   final double progress;
   final ValueChanged<double> onSliderChanged;
+  final String dayNumber;
+  final String month;
 
   const EstadoCard({
-    Key? key,
+    super.key,
     required this.gradientColors,
     required this.borderColor,
     required this.moodText,
@@ -23,9 +25,12 @@ class EstadoCard extends StatefulWidget {
     required this.animado,
     required this.progress,
     required this.onSliderChanged,
-  }) : super(key: key);
+    required this.dayNumber,
+    required this.month
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _EstadoCardState createState() => _EstadoCardState();
 }
 
@@ -56,7 +61,7 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
           radius: 1.1,
           center: Alignment.center,
         ),
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(40),
           topRight: Radius.circular(40),
         ),
@@ -86,11 +91,11 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text(
+                    child: const Text(
                       "< Atrás",
                       style: TextStyle(
                         fontSize: 18,
-                        color: const Color.fromARGB(255, 3, 3, 3),
+                        color: Color.fromARGB(255, 3, 3, 3),
                         fontFamily: 'Manrope',
                       ),
                     ),
@@ -99,11 +104,11 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text(
+                    child: const Text(
                       "Cancelar",
                       style: TextStyle(
                         fontSize: 18,
-                        color: const Color.fromARGB(255, 7, 7, 7),
+                        color: Color.fromARGB(255, 7, 7, 7),
                         fontFamily: 'Manrope',
                       ),
                     ),
@@ -111,7 +116,7 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
                 ],
               ),
               SizedBox(height: MediaQuery.of(context).size.height * 0.05),
-              Center(
+              const Center(
                 child: Text(
                   "¿Cómo ha estado tu día?",
                   style: TextStyle(
@@ -127,7 +132,7 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
               Center(
                 child: Text(
                   widget.moodText,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -135,15 +140,15 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
                   activeTrackColor: Colors.grey[300],
                   inactiveTrackColor: Colors.grey[300],
                   thumbColor: Colors.white,
                   overlayColor: Colors.white.withOpacity(0.2),
-                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                  overlayShape: RoundSliderOverlayShape(overlayRadius: 24.0),
+                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 24.0),
                 ),
                 child: Slider(
                   value: widget.progress,
@@ -151,20 +156,24 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
                   divisions: 4,
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     mostrarNotificacion();
+                    final String userId= await ApiService.obtenerUserId();
+                    await  ApiService.enviarDatos(widget.dayNumber, widget.month, widget.moodText, userId);
+                    // ignore: use_build_context_synchronously
+                    Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: widget.buttonColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   ),
-                  child: Text(
+                  child: const Text(
                     "Registrar",
                     style: TextStyle(
                       fontSize: 18,

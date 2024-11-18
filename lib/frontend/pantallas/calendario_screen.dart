@@ -4,7 +4,10 @@ import 'package:baymind/frontend/widgets/registro_card.dart';
 import 'package:intl/intl.dart';
 
 class CalendarioScreen extends StatefulWidget {
+  const CalendarioScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _CalendarioScreenState createState() => _CalendarioScreenState();
 }
 
@@ -59,7 +62,7 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
     setState(() {
       weekDays = [];
       // Calcular el inicio de la semana (6 días antes del día seleccionado)
-      DateTime startOfWeek = selectedDate.subtract(Duration(days: 6));
+      DateTime startOfWeek = selectedDate.subtract(const Duration(days: 6));
 
       for (int i = 0; i < 7; i++) {
         DateTime day = startOfWeek.add(Duration(days: i));
@@ -121,12 +124,12 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
                 child: GestureDetector(
                   onTap: () => _selectWeek(context),
                   child: ShaderMask(
-                    shaderCallback: (bounds) => LinearGradient(
+                    shaderCallback: (bounds) => const LinearGradient(
                       colors: [AppColors.morado, Colors.blue],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ).createShader(bounds),
-                    child: Icon(
+                    child: const Icon(
                       Icons.calendar_today_rounded,
                       size: 30,
                       color: Colors.white,
@@ -153,7 +156,7 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
                 },
               ),
             ),
-            SizedBox(height: 120),
+            const SizedBox(height: 120),
           ],
         ),
       ),

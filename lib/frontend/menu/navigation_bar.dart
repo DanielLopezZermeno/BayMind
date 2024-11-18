@@ -6,10 +6,10 @@ class CustomNavigationBar extends StatelessWidget {
   final Function(int) onTap;
 
   const CustomNavigationBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,50 +21,50 @@ class CustomNavigationBar extends StatelessWidget {
           items: [
             BottomNavigationBarItem(
               icon: ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
+                shaderCallback: (bounds) => const LinearGradient(
                   colors: [AppColors.morado, AppColors.azul],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ).createShader(bounds),
-                child: Icon(Icons.home),
+                child: const Icon(Icons.home),
               ),
               label: 'Inicio',
             ),
             BottomNavigationBarItem(
               icon: ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
+                shaderCallback: (bounds) => const LinearGradient(
                   colors: [AppColors.morado, AppColors.azul],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ).createShader(bounds),
-                child: Icon(Icons.calendar_today),
+                child: const Icon(Icons.calendar_today),
               ),
               label: 'Registros',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: SizedBox
                   .shrink(), // Espacio reservado para el botón "BayMind"
               label: '',
             ),
             BottomNavigationBarItem(
               icon: ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
+                shaderCallback: (bounds) => const LinearGradient(
                   colors: [AppColors.morado, AppColors.azul],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ).createShader(bounds),
-                child: Icon(Icons.lightbulb),
+                child: const Icon(Icons.lightbulb),
               ),
               label: 'Avance',
             ),
             BottomNavigationBarItem(
               icon: ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
+                shaderCallback: (bounds) => const LinearGradient(
                   colors: [AppColors.morado, AppColors.azul],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ).createShader(bounds),
-                child: Icon(Icons.person),
+                child: const Icon(Icons.person),
               ),
               label: 'Perfil',
             ),
@@ -84,8 +84,8 @@ class CustomNavigationBar extends StatelessWidget {
             child: Container(
               width: 80,
               height: 80,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
                   colors: [
                     AppColors.azul,
                     AppColors.azul,

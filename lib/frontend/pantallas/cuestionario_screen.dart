@@ -1,10 +1,12 @@
-import 'package:baymind/frontend/pantallas/home_screen.dart';
 import 'package:baymind/main.dart';
 import 'package:flutter/material.dart';
 import 'package:baymind/frontend/widgets/colors.dart';
 
 class CuestionarioScreen extends StatefulWidget {
+  const CuestionarioScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _CuestionarioScreenState createState() => _CuestionarioScreenState();
 }
 
@@ -31,7 +33,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
               children: [
                 ShaderMask(
                   shaderCallback: (bounds) {
-                    return LinearGradient(
+                    return const LinearGradient(
                       colors: [
                         AppColors.morado,
                         AppColors.azul
@@ -40,7 +42,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                       end: Alignment.bottomRight,
                     ).createShader(bounds);
                   },
-                  child: Text(
+                  child: const Text(
                     'Cuéntame un poco de ti...',
                     style: TextStyle(
                       fontSize: 24,
@@ -50,11 +52,11 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Nombre
                 TextFormField(
                   controller: nameController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: '¿Cuál es tu nombre?',
                     labelStyle: TextStyle(fontFamily: 'Manrope'),
                     border: OutlineInputBorder(),
@@ -66,13 +68,14 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Edad
-                Text('¿Cuál es tu edad?', style: TextStyle(fontFamily: 'Manrope')),
+                const Text('¿Cuál es tu edad?', style: TextStyle(fontFamily: 'Manrope')),
                 DropdownButtonFormField<String>(
                   value: selectedAge,
                   items: List.generate(83, (index) => (index + 18).toString())
                       .map((age) => DropdownMenuItem(
+                            // ignore: sort_child_properties_last
                             child: Text(age),
                             value: age,
                           ))
@@ -89,9 +92,9 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Estudias
-                Text('¿Estudias?', style: TextStyle(fontFamily: 'Manrope')),
+                const Text('¿Estudias?', style: TextStyle(fontFamily: 'Manrope')),
                 Row(
                   children: [
                     Radio<bool>(
@@ -103,7 +106,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                         });
                       },
                     ),
-                    Text('Sí', style: TextStyle(fontFamily: 'Manrope')),
+                    const Text('Sí', style: TextStyle(fontFamily: 'Manrope')),
                     Radio<bool>(
                       value: false,
                       groupValue: isStudent,
@@ -113,12 +116,12 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                         });
                       },
                     ),
-                    Text('No', style: TextStyle(fontFamily: 'Manrope')),
+                    const Text('No', style: TextStyle(fontFamily: 'Manrope')),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Trabajas
-                Text('¿Trabajas?', style: TextStyle(fontFamily: 'Manrope')),
+                const Text('¿Trabajas?', style: TextStyle(fontFamily: 'Manrope')),
                 Row(
                   children: [
                     Radio<bool>(
@@ -130,7 +133,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                         });
                       },
                     ),
-                    Text('Sí', style: TextStyle(fontFamily: 'Manrope')),
+                    const Text('Sí', style: TextStyle(fontFamily: 'Manrope')),
                     Radio<bool>(
                       value: false,
                       groupValue: isWorking,
@@ -140,15 +143,15 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                         });
                       },
                     ),
-                    Text('No', style: TextStyle(fontFamily: 'Manrope')),
+                    const Text('No', style: TextStyle(fontFamily: 'Manrope')),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Motivo para usar la app
                 TextFormField(
                   controller: reasonController,
                   maxLines: 4,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: '¿Por qué te gustaría usar BayMind?',
                     border: OutlineInputBorder(),
                     labelStyle: TextStyle(fontFamily: 'Manrope'),
@@ -160,9 +163,9 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Terapia psicológica
-                Text('¿Has tomado terapia psicológica?', style: TextStyle(fontFamily: 'Manrope')),
+                const Text('¿Has tomado terapia psicológica?', style: TextStyle(fontFamily: 'Manrope')),
                 Row(
                   children: [
                     Radio<bool>(
@@ -174,7 +177,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                         });
                       },
                     ),
-                    Text('Sí', style: TextStyle(fontFamily: 'Manrope')),
+                    const Text('Sí', style: TextStyle(fontFamily: 'Manrope')),
                     Radio<bool>(
                       value: false,
                       groupValue: hasTherapy,
@@ -184,16 +187,16 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                         });
                       },
                     ),
-                    Text('No', style: TextStyle(fontFamily: 'Manrope')),
+                    const Text('No', style: TextStyle(fontFamily: 'Manrope')),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Botón de Continuar con gradiente
                 Container(
                   width: double.infinity,
                   height: 50,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                       colors: [AppColors.morado, AppColors.azul],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
@@ -206,7 +209,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                         // Redirigir a la pantalla principal al registrarse
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => MainScreen()), // Cambiar a MainScreen
+                          MaterialPageRoute(builder: (context) => const MainScreen()), // Cambiar a MainScreen
                         );
                       }
                     },
@@ -217,7 +220,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Continuar',
                       style: TextStyle(
                           fontSize: 16,
