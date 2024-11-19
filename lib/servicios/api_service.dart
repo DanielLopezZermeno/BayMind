@@ -222,12 +222,8 @@ class ApiService {
     try {
       final response = await http.post(url, headers: headers, body: body);
 
-      if (response.statusCode == 200) {
-        // ignore: avoid_print
-        print("Datos enviados correctamente");
-      } else {
-        // ignore: avoid_print
-        print("Error al enviar datos: ${response.statusCode}");
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Error al enviar los datos: ${response.statusCode}');
       }
     } catch (e) {
       // ignore: avoid_print
@@ -235,6 +231,7 @@ class ApiService {
           "Excepción al enviar datos: $e $dayNumber, $month, $moodText, $userId");
     }
   }
+
 
   static Future<void> guardarUserId(String userId) async {
     final prefs = await SharedPreferences.getInstance();
