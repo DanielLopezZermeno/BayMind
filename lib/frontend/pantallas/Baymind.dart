@@ -24,7 +24,7 @@ class _BayMindScreen extends State<BaymindScreen> {
   void initState() {
     super.initState();
     _speechToText = stt.SpeechToText();
-    DialogFlowtter.fromFile().then((instance) => dialogFlowtter = instance);
+    //DialogFlowtter.fromFile().then((instance) => dialogFlowtter = instance);
   }
 
   void _sendMessage(String message) async {
