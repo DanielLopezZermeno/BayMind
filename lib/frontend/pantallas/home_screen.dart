@@ -15,12 +15,13 @@ class MoodBarChart extends StatefulWidget {
 }
 
 class _MoodBarChartState extends State<MoodBarChart> {
-
+  DateTime date= DateTime.now();
+  String usuario="";
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<BarChartGroupData>>(
       // Llamamos al método obtenerDatosBarChart desde ApiService
-      future: ApiService.obtenerDatosBarChart(),
+      future: ApiService.obtenerDatosBarChart(usuario,date.day, date.month),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -239,7 +240,7 @@ class _HomeScreen extends State<HomeScreen>{
                 const SizedBox(height: 20),
                 // Primer cuadro: Saludo y cita
                 Container(
-                  height: 100,
+                  height: 130,
                   width: MediaQuery.of(context).size.width * 0.90,
                   decoration: BoxDecoration(
                     color: Colors.white,

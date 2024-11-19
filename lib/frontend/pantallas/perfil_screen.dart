@@ -1,112 +1,160 @@
-import 'dart:io';
+// ignore_for_file: unnecessary_string_interpolations
 
-import 'package:baymind/frontend/widgets/colors.dart';
-import 'package:baymind/servicios/notification_services.dart';
+import 'package:baymind/frontend/pantallas/scroll_design.dart';
+import 'package:baymind/main.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:baymind/servicios/notification_services.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz_data;
 
 class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _PerfilScreenState createState() => _PerfilScreenState();
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
-  File? _profileImage;
-  final ImagePicker _picker = ImagePicker();
-  TextEditingController _nameController = TextEditingController();
-  DateTime? _birthDate;
-  bool _notificationsEnabled = true;
+  DateTime dateTime = DateTime.now(); // Sumar un día a la fecha actual
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
-  // Variables para almacenar las horas seleccionadas para cada notificación
-  TimeOfDay _selectedTimeRespirar = TimeOfDay(hour: 11, minute: 0);
-  TimeOfDay _selectedTimePausa = TimeOfDay(hour: 15, minute: 0);
-  TimeOfDay _selectedTimeReflexion = TimeOfDay(hour: 18, minute: 0);
-  TimeOfDay _selectedTimeMeditar = TimeOfDay(hour: 19, minute: 0);
+  bool _notificationsEnabled = false;
+  TimeOfDay _selectedTimeRespirar = const TimeOfDay(hour: 9, minute: 0);
+  TimeOfDay _selectedTimePausa = const TimeOfDay(hour: 12, minute: 0);
+  TimeOfDay _selectedTimeReflexion = const TimeOfDay(hour: 18, minute: 0);
+  TimeOfDay _selectedTimeMeditar = const TimeOfDay(hour: 21, minute: 0);
 
   @override
   void initState() {
     super.initState();
-    _nameController.text = "Nombre";
-  }
-
-  // Método para seleccionar imagen de la galería
-  Future<void> _selectProfileImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _profileImage = File(pickedFile.path);
-      });
-    }
-  }
-
-  // Método para seleccionar fecha de nacimiento
-  Future<void> _selectBirthDate() async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)), // Mayor de 18 años
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
+    initNotifications(); // Inicializar notificaciones
+    _loadSettings(); // Cargar configuraciones al iniciar
+    tz_data.initializeTimeZones();
+    final tz.TZDateTime scheduledAt = tz.TZDateTime.from(dateTime, tz.local);
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      'your_channel_id',
+      'your_channel_name',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
     );
 
-    if (pickedDate != null) {
-      setState(() {
-        _birthDate = pickedDate;
-      });
-    }
-  }
-
-  // Método para seleccionar hora de notificación
-  Future<void> _selectTime(
-      BuildContext context, String notificationType) async {
-    TimeOfDay? selectedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
     );
+    flutterLocalNotificationsPlugin.zonedSchedule(
+        1, "title", "body", scheduledAt, notificationDetails,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.wallClockTime,
+        matchDateTimeComponents: DateTimeComponents.time,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle);
+  }
 
-    if (selectedTime != null) {
-      setState(() {
-        switch (notificationType) {
-          case 'respirar':
-            _selectedTimeRespirar = selectedTime;
-            break;
-          case 'pausa':
-            _selectedTimePausa = selectedTime;
-            break;
-          case 'reflexion':
-            _selectedTimeReflexion = selectedTime;
-            break;
-          case 'meditar':
-            _selectedTimeMeditar = selectedTime;
-            break;
-        }
-      });
+  // Cargar configuraciones guardadas (desde SharedPreferences)
+  void _loadSettings() async {
+    // Realizar la carga de datos asincrónicamente primero
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool notificationsEnabled = prefs.getBool('notificationsEnabled') ?? false;
+    TimeOfDay selectedTimeRespirar = await _loadTime('respirar');
+    TimeOfDay selectedTimePausa = await _loadTime('pausa');
+    TimeOfDay selectedTimeReflexion = await _loadTime('reflexion');
+    TimeOfDay selectedTimeMeditar = await _loadTime('meditar');
+
+    // Ahora actualizamos el estado de forma síncrona
+    setState(() {
+      _notificationsEnabled = notificationsEnabled;
+      _selectedTimeRespirar = selectedTimeRespirar;
+      _selectedTimePausa = selectedTimePausa;
+      _selectedTimeReflexion = selectedTimeReflexion;
+      _selectedTimeMeditar = selectedTimeMeditar;
+    });
+
+    // Si las notificaciones están habilitadas, actualizamos las horas
+    if (_notificationsEnabled) {
+      _updateNotificationTimes();
     }
   }
 
-  // Método para convertir TimeOfDay a DateTime
-  DateTime _convertToDateTime(TimeOfDay timeOfDay) {
-    final now = DateTime.now();
-    return DateTime(now.year, now.month, now.day, timeOfDay.hour, timeOfDay.minute);
+  // Cargar hora desde SharedPreferences
+  Future<TimeOfDay> _loadTime(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? hour = prefs.getInt('$key.hour');
+    int? minute = prefs.getInt('$key.minute');
+
+    if (hour != null && minute != null) {
+      return TimeOfDay(hour: hour, minute: minute);
+    }
+
+    // Si no hay hora guardada, devolver un valor predeterminado
+    return const TimeOfDay(hour: 9, minute: 0); // Hora predeterminada
   }
 
-  // Método para actualizar las horas de las notificaciones
+  // Guardar configuraciones en SharedPreferences
+  void _saveSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('notificationsEnabled', _notificationsEnabled);
+    prefs.setInt('respirar.hour', _selectedTimeRespirar.hour);
+    prefs.setInt('respirar.minute', _selectedTimeRespirar.minute);
+    prefs.setInt('pausa.hour', _selectedTimePausa.hour);
+    prefs.setInt('pausa.minute', _selectedTimePausa.minute);
+    prefs.setInt('reflexion.hour', _selectedTimeReflexion.hour);
+    prefs.setInt('reflexion.minute', _selectedTimeReflexion.minute);
+    prefs.setInt('meditar.hour', _selectedTimeMeditar.hour);
+    prefs.setInt('meditar.minute', _selectedTimeMeditar.minute);
+    _updateNotificationTimes();
+  }
+
+  // Actualizar las notificaciones con las horas seleccionadas
   void _updateNotificationTimes() {
     if (_notificationsEnabled) {
-      // Convertir las horas seleccionadas a DateTime
       DateTime timeRespirar = _convertToDateTime(_selectedTimeRespirar);
       DateTime timePausa = _convertToDateTime(_selectedTimePausa);
       DateTime timeReflexion = _convertToDateTime(_selectedTimeReflexion);
       DateTime timeMeditar = _convertToDateTime(_selectedTimeMeditar);
+      DateTime newDT = DateTime(dateTime.year, dateTime.month, dateTime.day,
+          _selectedTimeRespirar.hour, _selectedTimeRespirar.minute);
+      // Programar las notificaciones
 
-      // Llamar a las funciones de notificación con los DateTime correctos
+      dateTime = newDT;
       programarNotificacionRespirar(timeRespirar);
       programarNotificacionPausa(timePausa);
       programarNotificacionReflexion(timeReflexion);
       programarNotificacionMeditar(timeMeditar);
     }
+  }
+
+  // Convertir TimeOfDay a DateTime
+  DateTime _convertToDateTime(TimeOfDay timeOfDay) {
+    final now = DateTime.now();
+    return DateTime(
+        now.year, now.month, now.day, timeOfDay.hour, timeOfDay.minute);
+  }
+
+  // Función para mostrar el selector de hora
+  Future<void> _selectTime(
+      BuildContext context, String tipo, TimeOfDay initialTime) async {
+    TimeOfDay newTime = await showTimePicker(
+          context: context,
+          initialTime: initialTime,
+        ) ??
+        initialTime;
+
+    setState(() {
+      if (tipo == 'Respirar') {
+        _selectedTimeRespirar = newTime;
+      } else if (tipo == 'Pausa') {
+        _selectedTimePausa = newTime;
+      } else if (tipo == 'Reflexion') {
+        _selectedTimeReflexion = newTime;
+      } else if (tipo == 'Meditar') {
+        _selectedTimeMeditar = newTime;
+      }
+    });
   }
 
   // Método para cerrar sesión (simulación)
@@ -123,7 +171,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
           ),
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ScrollScreen()),
+              );
             },
             child: const Text("Salir"),
           ),
@@ -136,113 +187,77 @@ class _PerfilScreenState extends State<PerfilScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Perfil",
-          style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Manrope', color: AppColors.morado),
-        ),
+        title: const Text('Configuración de Perfil'),
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Imagen de Perfil
-            GestureDetector(
-              onTap: _selectProfileImage,
-              child: CircleAvatar(
-                radius: 60,
-                backgroundColor: Colors.grey[300],
-                backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                child: _profileImage == null
-                    ? const Icon(Icons.add_a_photo, size: 40, color: Colors.grey)
-                    : null,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Campo para cambiar el nombre
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: "Nombre",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Selección de Fecha de Nacimiento
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _birthDate == null
-                        ? "Fecha de Nacimiento"
-                        : "Fecha de Nacimiento: ${DateFormat('dd/MM/yyyy').format(_birthDate!)}",
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.calendar_today),
-                  onPressed: _selectBirthDate,
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // Activar/Desactivar Notificaciones
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("Activar Notificaciones"),
-                Switch(
-                  value: _notificationsEnabled,
-                  onChanged: (value) {
-                    setState(() {
-                      _notificationsEnabled = value;
-                      if (value) {
-                        _updateNotificationTimes();
-                      }
-                    });
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // Selección de las horas para las notificaciones
-            ListTile(
-              title: const Text("Hora de respiración"),
-              subtitle: Text("${_selectedTimeRespirar.format(context)}"),
-              onTap: () => _selectTime(context, 'respirar'),
+            SwitchListTile(
+              title: const Text('Activar Notificaciones'),
+              value: _notificationsEnabled,
+              onChanged: (value) {
+                setState(() {
+                  _notificationsEnabled = value;
+                });
+                _saveSettings();
+              },
             ),
             ListTile(
-              title: const Text("Hora de pausa"),
-              subtitle: Text("${_selectedTimePausa.format(context)}"),
-              onTap: () => _selectTime(context, 'pausa'),
+              title: const Text('Hora de Respirar'),
+              subtitle: Text('${_selectedTimeRespirar.format(context)}'),
+              trailing: const Icon(Icons.access_time),
+              onTap: () =>
+                  _selectTime(context, 'Respirar', _selectedTimeRespirar),
             ),
             ListTile(
-              title: const Text("Hora de reflexión"),
-              subtitle: Text("${_selectedTimeReflexion.format(context)}"),
-              onTap: () => _selectTime(context, 'reflexion'),
+              title: const Text('Hora de Pausa'),
+              subtitle: Text('${_selectedTimePausa.format(context)}'),
+              trailing: const Icon(Icons.access_time),
+              onTap: () => _selectTime(context, 'Pausa', _selectedTimePausa),
             ),
             ListTile(
-              title: const Text("Hora de meditación"),
-              subtitle: Text("${_selectedTimeMeditar.format(context)}"),
-              onTap: () => _selectTime(context, 'meditar'),
+              title: const Text('Hora de Reflexión'),
+              subtitle: Text('${_selectedTimeReflexion.format(context)}'),
+              trailing: const Icon(Icons.access_time),
+              onTap: () =>
+                  _selectTime(context, 'Reflexion', _selectedTimeReflexion),
             ),
-
+            ListTile(
+              title: const Text('Hora de Meditar'),
+              subtitle: Text('${_selectedTimeMeditar.format(context)}'),
+              trailing: const Icon(Icons.access_time),
+              onTap: () =>
+                  _selectTime(context, 'Meditar', _selectedTimeMeditar),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                _saveSettings;
+                guardarNotificacion();
+              },
+              child: const Text('Guardar Configuración'),
+            ),
             const SizedBox(height: 20),
 
             // Botón de Cerrar Sesión
-            ElevatedButton(
-              onPressed: _logout,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+            Center(
+              child: ElevatedButton(
+                onPressed: _logout,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                child: const Text(
+                  "Cerrar Sesión",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Manrope',
+                    color: Colors.white,
+                  ),
+                ),
               ),
-              child: const Text(
-                "Cerrar Sesión",
-                style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Manrope', color: Colors.white),
-              ),
-            ),
+            )
           ],
         ),
       ),

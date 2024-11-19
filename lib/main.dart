@@ -1,4 +1,6 @@
-import 'package:baymind/frontend/pantallas/Baymind.dart';
+// ignore_for_file: avoid_print
+
+import 'package:baymind/frontend/pantallas/baymind.dart';
 import 'package:baymind/frontend/pantallas/calendario_screen.dart';
 import 'package:baymind/frontend/pantallas/avance_screen.dart';
 import 'package:baymind/frontend/pantallas/perfil_screen.dart';
@@ -8,6 +10,9 @@ import 'package:baymind/frontend/pantallas/scroll_design.dart';
 import 'package:baymind/servicios/notification_services.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:timezone/data/latest.dart';
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -51,7 +56,7 @@ class _MainScreenState extends State<MainScreen> {
     const CalendarioScreen(),
     const BaymindScreen(),
     const AvanceScreen(),
-    const PerfilScreen(),
+    PerfilScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -87,12 +92,25 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
-
+Future<void> solicitarPermisoExactAlarm() async {
+  if (await Permission.scheduleExactAlarm.isDenied) {
+    // Solicitar permiso
+    var status = await Permission.scheduleExactAlarm.request();
+    if (status.isGranted) {
+      print("Permiso concedido");
+    } else {
+      print("Permiso denegado");
+    }
+  }
+}
 void main() async{
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  await initNotificactions();
+  await initNotifications();
   await SharedPreferences.getInstance();
+  await AndroidAlarmManager.initialize();
+  await solicitarPermisoExactAlarm();
+  initializeTimeZones();
   runApp(const MyApp());
 }

@@ -7,9 +7,27 @@ import 'package:intl/intl.dart';
 class MoodLineChart extends StatefulWidget {
   final String
       chartType; // Agregamos este parámetro para decidir el tipo de gráfico
+  final String usuario; // Usuario
+  final int? primerDia; // Primer día (solo para "days")
+  final int? primerMes; // Primer mes (solo para "days")
+  final int? ultimoDia; // Último día (solo para "days")
+  final int? ultimoMes; // Último mes (solo para "days")
+  final int? dia; // Día (para "weeks" y otros tipos)
+  final int? mes; // Mes (para "weeks" y otros tipos)
 
+  const MoodLineChart({
+    super.key,
+    required this.chartType,
+    required this.usuario,
+    this.primerDia,
+    this.primerMes,
+    this.ultimoDia,
+    this.ultimoMes,
+    this.dia,
+    this.mes,
+  });
   // Modificamos el constructor para aceptar el tipo de gráfico
-  const MoodLineChart({super.key, required this.chartType});
+  //const MoodLineChart({super.key, required this.chartType});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -20,7 +38,16 @@ class _MoodLineChartState extends State<MoodLineChart> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<LineChartBarData>>(
-      future: ApiService.obtenerDatosLineChart(widget.chartType),
+      future: ApiService.obtenerDatosLineChart(
+        widget.chartType,
+        usuario: widget.usuario,
+        primerDia: widget.primerDia,
+        primerMes: widget.primerMes,
+        ultimoDia: widget.ultimoDia,
+        ultimoMes: widget.ultimoMes,
+        dia: widget.dia,
+        mes: widget.mes,
+      ),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -171,6 +198,23 @@ class _AvanceScreenState extends State<AvanceScreen>
 
   @override
   Widget build(BuildContext context) {
+    final DateTime today = DateTime.now();
+
+    // Fecha de hace 7 días
+    final DateTime sevenDaysAgo = today.subtract(const Duration(days: 7));
+    // Calcula el inicio de la semana actual (asumiendo semana empieza en lunes)
+    final DateTime startOfThisWeek =
+        today.subtract(Duration(days: today.weekday - 1));
+
+    // Inicio de la semana pasada
+    final DateTime startOfLastWeek =
+        startOfThisWeek.subtract(const Duration(days: 7));
+
+    // Inicio de hace dos semanas
+    final DateTime startOfTwoWeeksAgo =
+        startOfLastWeek.subtract(const Duration(days: 28));
+
+    final DateTime sixMonthsAgo = DateTime(today.year, today.month - 6);
     return Scaffold(
       appBar: AppBar(
         title: const Text('¡Es un gran progreso!',
@@ -241,42 +285,12 @@ class _AvanceScreenState extends State<AvanceScreen>
                       ),
                     ],
                   ),
-                  child: const MoodLineChart(chartType: 'days')),
-            ),
-            SizedBox(
-              height: 250, // Ajusta la altura aquí según lo necesites
-              child: Container(
-                  margin: const EdgeInsets.only(
-                      top: 80,
-                      bottom: 80,
-                      left: 10,
-                      right: 10), // Márgenes alrededor del gráfico
-                  padding: const EdgeInsets.all(
-                      38.0), // Relleno interno del contenedor
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(
-                        255, 255, 255, 255), // Color de fondo del contenedor
-                    borderRadius:
-                        BorderRadius.circular(12.0), // Bordes redondeados
-                    gradient: const LinearGradient(
-                      colors: [
-                        AppColors.morado,
-                        AppColors.azul,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 5,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: const MoodLineChart(
-                    chartType: 'weeks',
+                  child: MoodLineChart(
+                    chartType: 'days', usuario: 'usuario123', // Usuario actual
+                    primerDia: sevenDaysAgo.day,
+                    primerMes: sevenDaysAgo.month,
+                    ultimoDia: today.day,
+                    ultimoMes: today.month,
                   )),
             ),
             SizedBox(
@@ -311,8 +325,50 @@ class _AvanceScreenState extends State<AvanceScreen>
                       ),
                     ],
                   ),
-                  child: const MoodLineChart(
+                  child: MoodLineChart(
+                    chartType: 'weeks',
+                    usuario: 'usuario123',
+                    dia: startOfTwoWeeksAgo.day,
+                    mes: startOfTwoWeeksAgo.month,
+                  )),
+            ),
+            SizedBox(
+              height: 250, // Ajusta la altura aquí según lo necesites
+              child: Container(
+                  margin: const EdgeInsets.only(
+                      top: 80,
+                      bottom: 80,
+                      left: 10,
+                      right: 10), // Márgenes alrededor del gráfico
+                  padding: const EdgeInsets.all(
+                      38.0), // Relleno interno del contenedor
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(
+                        255, 255, 255, 255), // Color de fondo del contenedor
+                    borderRadius:
+                        BorderRadius.circular(12.0), // Bordes redondeados
+                    gradient: const LinearGradient(
+                      colors: [
+                        AppColors.morado,
+                        AppColors.azul,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: MoodLineChart(
                     chartType: 'months',
+                    usuario: 'usuario123', // Usuario actual
+                    dia: today.day, // Día actual
+                    mes: sixMonthsAgo.month, // Mes inicial (hace 6 meses)
                   )),
             ),
           ],
