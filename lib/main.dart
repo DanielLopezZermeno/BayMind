@@ -56,7 +56,7 @@ class _MainScreenState extends State<MainScreen> {
     const CalendarioScreen(),
     const BaymindScreen(),
     const AvanceScreen(),
-    PerfilScreen(),
+    const PerfilScreen(),
   ];
 
   void _onItemTapped(int index) {

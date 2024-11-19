@@ -1,7 +1,6 @@
 // ignore_for_file: unnecessary_string_interpolations
 
 import 'package:baymind/frontend/pantallas/scroll_design.dart';
-import 'package:baymind/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
