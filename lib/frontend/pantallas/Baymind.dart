@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:baymind/frontend/widgets/colors.dart';
+import 'package:dialog_flowtter/dialog_flowtter.dart';
 
 class BaymindScreen extends StatefulWidget {
   const BaymindScreen({super.key});
@@ -17,38 +18,36 @@ class _BayMindScreen extends State<BaymindScreen> {
   final List<Map<String, String>> _messages = [];
   bool _isListening = false;
   late stt.SpeechToText _speechToText;
+  late DialogFlowtter dialogFlowtter;
 
   @override
   void initState() {
     super.initState();
     _speechToText = stt.SpeechToText();
+    DialogFlowtter.fromFile().then((instance) => dialogFlowtter = instance);
   }
 
-  void _sendMessage(String message) {
+  void _sendMessage(String message) async {
     if (message.trim().isEmpty) return;
 
     setState(() {
       _messages.add({"sender": "user", "text": message});
     });
     _textController.clear();
-    _simulateResponse(message);
-  }
 
-  // Simulación de respuesta de la IA
-  void _simulateResponse(String userMessage) {
+    // Enviar el mensaje a Dialogflow
+    DetectIntentResponse response = await dialogFlowtter.detectIntent(
+      queryInput: QueryInput(text: TextInput(text: message)),
+    );
+
+    if (response.message == null) return;
+
+    // Añadir la respuesta de Dialogflow
     setState(() {
-      _messages.add({"sender": "ai", "text": "Estoy analizando tu mensaje..."});
-    });
-
-    Future.delayed(const Duration(seconds: 1), () {
-      setState(() {
-        _messages.removeLast();
-        _messages.add({"sender": "ai", "text": "Entiendo, cuéntame más sobre eso."});
-      });
+      _messages.add({"sender": "ai", "text": response.message!.text!.text![0]});
     });
   }
 
-  // Método para escuchar el mensaje de voz
   Future<void> _listen() async {
     if (!_isListening) {
       bool available = await _speechToText.initialize();
@@ -95,46 +94,48 @@ class _BayMindScreen extends State<BaymindScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: const Text("Aquí esta tu amigo BayMind", style:
-                TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Manrope', color: AppColors.morado, fontSize: 24)),
+        title: const Text("Aquí esta tu amigo BayMind",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Manrope',
+                color: AppColors.morado,
+                fontSize: 24)),
       ),
       body: Container(
-        // Añadir un fondo de gradiente al contenedor
         decoration: const BoxDecoration(
           gradient: RadialGradient(
             colors: [
               Color.fromRGBO(202, 163, 214, 0.5),
               Color.fromRGBO(180, 145, 191, 0.5),
               Colors.white
-            ], // El gradiente va de morado a blanco
-            radius: 1.1, // Controla el tamaño del área del gradiente
-            center: Alignment
-                .center, // El centro del gradiente será el centro del widget
+            ],
+            radius: 1.1,
+            center: Alignment.center,
           ),
           boxShadow: [
-          BoxShadow(
-            color: Color.fromARGB(34, 0, 0, 0),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: Offset(0, 6),
-          ),
-        ],
+            BoxShadow(
+              color: Color.fromARGB(34, 0, 0, 0),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: Offset(0, 6),
+            ),
+          ],
         ),
         child: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              reverse: true,
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[_messages.length - 1 - index];
-                return _buildMessage(message["sender"]!, message["text"]!);
-              },
+          children: [
+            Expanded(
+              child: ListView.builder(
+                reverse: true,
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  final message = _messages[_messages.length - 1 - index];
+                  return _buildMessage(message["sender"]!, message["text"]!);
+                },
+              ),
             ),
-          ),
-          _buildInputArea(),
-        ],
-      ),
+            _buildInputArea(),
+          ],
+        ),
       ),
     );
   }
@@ -145,7 +146,6 @@ class _BayMindScreen extends State<BaymindScreen> {
       color: Colors.white,
       child: Row(
         children: [
-          // Botón para grabar audio
           AvatarGlow(
             animate: _isListening,
             glowColor: AppColors.morado,
@@ -164,11 +164,11 @@ class _BayMindScreen extends State<BaymindScreen> {
               ),
             ),
           ),
-          // Campo de texto para el mensaje
           Expanded(
             child: TextField(
               controller: _textController,
-              decoration: const InputDecoration.collapsed(hintText: "Exagerame los detalles..."),
+              decoration: const InputDecoration.collapsed(
+                  hintText: "Exagerame los detalles..."),
             ),
           ),
           IconButton(

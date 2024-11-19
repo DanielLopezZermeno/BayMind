@@ -1,6 +1,6 @@
 name: baymind
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -25,7 +25,7 @@ dependencies:
   android_alarm_manager_plus: ^4.0.4
   permission_handler: ^11.3.1
   flutter_launcher_icons: ^0.13.1
-
+  dialog_flowtter: ^0.3.3
 flutter_icons:
   android: true
   ios: true
@@ -41,12 +41,12 @@ flutter:
 
   assets:
     - assets/
+    - assets/dialog_flow_auth.json
   fonts:
     - family: Manrope
       fonts:
         - asset: assets/fonts/Manrope/static/Manrope-Regular.ttf
         - asset: assets/fonts/Manrope/static/Manrope-Bold.ttf
-          weight: 700  # Si tienes una versión en negrita de la fuente
+          weight: 700 # Si tienes una versión en negrita de la fuente
         - asset: assets/fonts/Manrope/static/Manrope-ExtraBold.ttf
           weight: 800
-
