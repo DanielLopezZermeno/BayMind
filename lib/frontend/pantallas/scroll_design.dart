@@ -1,7 +1,13 @@
+import 'dart:convert';
 import 'package:baymind/frontend/pantallas/cuestionario_screen.dart';
 import 'package:baymind/main.dart';
 import 'package:baymind/servicios/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+
+final String apiUrl ="https://baymind-backend.onrender.com/api/auth";
 
 class ScrollScreen extends StatelessWidget {
   const ScrollScreen({super.key});
@@ -75,6 +81,14 @@ class Background extends StatelessWidget {
   }
 }
 
+Future<void> saveToken(String token) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('authToken', token); // Guarda el token con la clave 'authToken'
+}
+
+
+
+
 // Pantalla de Login
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -84,11 +98,77 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
+
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   final _formKey = GlobalKey<FormState>(); // Para las validaciones del formulario
+
+Future<void> _login(String email, String password) async {
+  final url = Uri.parse('$apiUrl/login'); // Cambia la URL de tu servidor
+
+  try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': email,
+          'password': password,
+        }),
+        
+      );
+
+      if (response.statusCode == 200) {
+        // Aquí puedes manejar la rqespuesta del servidor, como el token JWT
+        final responseData = json.decode(response.body);
+        print ("Respuesta exitosa: ${response.body}");
+        if (responseData['error'] == null) {
+          // Login exitoso,
+          String token = responseData['data']['token'];
+          String userId = responseData['data']['user']['id'];
+          String userName = responseData['data']['user']['name'];
+
+          saveToken(token);
+
+          // redirigir a la pantalla principal
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MainScreen()),
+          );
+        } else {
+          // Mostrar mensaje de error
+          _showErrorDialog(responseData['message'] ?? 'Credenciales incorrectas');
+        }
+      } else {
+        _showErrorDialog('Hubo un error al intentar iniciar sesión');
+      }
+    } catch (error) {
+      _showErrorDialog('Error de conexión');
+    }
+  }
+
+  // Mostrar un cuadro de diálogo con el error
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Error'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('Aceptar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -208,12 +288,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState?.validate() ?? false) {  // Validar el formulario
+                                _login(_emailController.text, _passwordController.text);
+                                
                                 // Redirigir a la pantalla principal al iniciar sesión
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const MainScreen()), // Cambiar a MainScreen
-                                );
-                                ApiService.guardarUserId("1");
+                                //Navigator.pushReplacement(
+                                  //context,
+                                 // MaterialPageRoute(builder: (context) => const MainScreen()), // Cambiar a MainScreen
+                                //);
+                                //ApiService.guardarUserId("1");
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -292,6 +374,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   final _formKey = GlobalKey<FormState>();
+
+
+  Future<void> _register() async {
+    if (_formKey.currentState!.validate()) {
+      final email = _emailController.text;
+      final password = _passwordController.text;
+
+    try{
+      final response = await http.post(
+        Uri.parse('$apiUrl/register'), // Cambia la URL a la de tu servidor
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'email': email, 'password': password}),
+      );
+
+      print("Respuesta del servidor: ${response.body}");
+      print("Código de estado: ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        // Registro exitoso, redirigir a otra pantalla
+        final responseData = json.decode(response.body);
+        String token = responseData['data']['token'];
+        saveToken(token);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CuestionarioScreen()),
+        );
+      } else {
+        // Error en el registro
+        final responseData = json.decode(response.body);
+        String errorMessage = responseData['error'] ?? 'Error al registrar';
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al registrar')));
+      }
+    } catch (error) {
+      // En caso de error en la solicitud HTTP
+        print("Error al realizar la solicitud: $error");
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error de conexión')));
+    }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -438,14 +561,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                           child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const CuestionarioScreen()),
-                                );
-                              }
-                            },
+                            onPressed:_register, //() {
+                              //if (_formKey.currentState!.validate()) {
+                                //Navigator.push(
+                                  //context,
+                                  //MaterialPageRoute(builder: (context) => const CuestionarioScreen()),
+                                //);
+                              //}
+                            //},
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
                               shadowColor: Colors.transparent,

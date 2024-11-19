@@ -1,6 +1,13 @@
+import 'dart:convert';
 import 'package:baymind/main.dart';
 import 'package:flutter/material.dart';
 import 'package:baymind/frontend/widgets/colors.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+
+
+const urlApi ="https://baymind-backend.onrender.com/api/auth";
 
 class CuestionarioScreen extends StatefulWidget {
   const CuestionarioScreen({super.key});
@@ -19,7 +26,85 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
   final reasonController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  
 
+Future<String?> getToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('authToken'); // Recupera el token con la clave 'authToken'
+}
+
+
+
+Future<void> sendDataToServer({
+  required String name,
+  required int age,
+  required bool isWorking,
+  required bool isStudying,
+  required String appUsageReason,
+  required BuildContext context,
+}) async {
+  // Crear el objeto con las respuestas
+ String? yourToken = await getToken();
+if (yourToken == null) {
+  print("Token no encontrado.");
+} else {
+  print("Token obtenido: $yourToken");
+}
+
+  Map<String, dynamic> answers = {
+    'name': name,
+    'age': age,
+    'isWorking': isWorking,
+    'isStudying': isStudying,
+    'hasTherapy': hasTherapy,
+    'appUsageReason': appUsageReason,
+  };
+
+  Map<String, dynamic> body = {
+    'answers': answers,
+  };
+
+
+  try {
+    // Hacer la solicitud HTTP al servidor
+      var response = await http.post(
+        
+        Uri.parse('$urlApi/answers'), // Cambia a la URL de tu API
+        headers: {
+          'Authorization': 'Bearer $yourToken',  // Asegúrate de incluir el token si es necesario
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(body),
+      );
+      print (body);
+
+
+    if (response.statusCode == 200) {
+      // Respuesta exitosa del servidor, puedes redirigir al usuario
+      print("Respuesta exitosa: ${response.body}");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainScreen()), // Cambia a la pantalla principal
+      );
+    } else {
+      // Si la respuesta no es exitosa
+      print("Error del servidor: ${response.statusCode}");
+      print("Cuerpo de la respuesta del servidor: ${response.body}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al guardar las respuestas.')),
+      );
+    }
+  } catch (e) {
+    // Manejo de errores si la solicitud falla
+    print('Error al enviar las respuestas: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error de conexión. ${e.toString()}')),
+    );
+  }
+}
+
+
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -204,12 +289,24 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        // Redirigir a la pantalla principal al registrarse
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const MainScreen()), // Cambiar a MainScreen
+                        // Recopilamos los datos del formulario
+                        String name = nameController.text;
+                        int age = int.parse(selectedAge!); // Convertimos la edad seleccionada
+                        bool isStudying = isStudent;
+                        bool isWorking = this.isWorking;
+                        bool hasTherapy = this.hasTherapy;
+                        String appUsageReason = reasonController.text;
+
+                        // Llamamos a la función para enviar los datos al servidor
+                        await sendDataToServer(
+                          name: name,
+                          age: age,
+                          isWorking: isWorking,
+                          isStudying: isStudying,
+                          appUsageReason: appUsageReason,
+                          context: context, // Cambiar a MainScreen
                         );
                       }
                     },

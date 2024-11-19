@@ -38,6 +38,7 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
   late AnimatedBackground controller;
 
 
+
   @override
   Widget build(BuildContext context) {
     final particleOptions = ParticleOptions(
@@ -162,6 +163,7 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
                   onPressed: () async {
                     mostrarNotificacion();
                     final String userId= await ApiService.obtenerUserId();
+                    print(userId);
                     await  ApiService.enviarDatos(widget.dayNumber, widget.month, widget.moodText, userId);
                     // ignore: use_build_context_synchronously
                     Navigator.pop(context);

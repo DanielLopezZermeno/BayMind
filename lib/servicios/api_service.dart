@@ -11,7 +11,7 @@ class ApiService {
   static const String _baseUrlLineChartDias = 'http://localhost:3000/api/datos/lineChart';
   static const String _baseUrlLineChartSemanas = 'http://localhost:3000/api/datos/lineChart';
   static const String _baseUrlLineChartMeses = 'http://localhost:3000/api/datos/lineChart';
-  static const String nuevoRegistro = 'http://localhost:3000/api/datos/lineChart';
+  static const String nuevoRegistro = 'https://baymind-backend.onrender.com/api/auth';
   // ignore: constant_identifier_names
   static const String Datostarjeta = 'http://localhost:3000/api/datos/lineChart';
   // Método para obtener una frase motivacional aleatoria
@@ -160,35 +160,48 @@ class ApiService {
     ];
   }
 }
-  static Future<void> enviarDatos(String dayNumber, String month, String moodText, String userId) async {
-    final url = Uri.parse(nuevoRegistro); // Reemplaza con tu URL
-    final headers = {"Content-Type": "application/json"};
+  
+  static Future<void> enviarDatos(
+    String dayNumber, String month, String moodText, String userId) async {
+  final url = Uri.parse("$nuevoRegistro/mood"); // Reemplaza con tu URL de API
 
-    // Construimos el cuerpo de la solicitud incluyendo el `userId`
-    final body = jsonEncode({
-      "userId": userId,
-      "dayNumber": dayNumber,
-      "month": month,
-      "moodText": moodText,
-    });
 
-    try {
-      final response = await http.post(url, headers: headers, body: body);
+   // Recuperar el token desde SharedPreferences
+  final prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('authToken'); // Usar la misma clave
 
-      if (response.statusCode == 200) {
-        // ignore: avoid_print
-        print("Datos enviados correctamente");
-      } else {
-        // ignore: avoid_print
-        print("Error al enviar datos: ${response.statusCode}");
+  try {
+      if (token == null) {
+        throw Exception('No se encontró el token JWT');
+      }
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'userId': userId,
+          'dia': dayNumber,
+          'mes': month,
+          'estadoAnimo': moodText,
+          'fecha': DateTime.now().toIso8601String(),
+        }),
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Error al enviar los datos: ${response.statusCode}');
       }
     } catch (e) {
-      // ignore: avoid_print
-      print("Excepción al enviar datos: $e $dayNumber, $month, $moodText, $userId");
+      // Aquí puedes manejar los errores según tus necesidades
+      print('Error en enviarDatos: $e');
+      rethrow;
     }
   }
 
-   static Future<void> guardarUserId(String userId) async {
+
+  static Future<void> guardarUserId(String userId) async {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('userId', userId);
     }

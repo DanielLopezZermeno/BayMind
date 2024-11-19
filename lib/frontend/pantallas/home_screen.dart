@@ -330,6 +330,7 @@ class _HomeScreen extends State<HomeScreen>{
                             ),
                             const SizedBox(height: 10),
                             TextButton(
+                              //al presionar este botón, se manda la fecha actual
                               onPressed: () {
                                 Navigator.push(
                       context,

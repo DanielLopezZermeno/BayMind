@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:baymind/frontend/widgets/estado_widgets.dart';
 import 'package:baymind/frontend/widgets/colors.dart';
+
+
+
 class EstadoScreen extends StatefulWidget {
   final String month;
   final String dayNumber;
@@ -14,7 +17,9 @@ class _EstadoScreenState extends State<EstadoScreen> with SingleTickerProviderSt
   
   double progress = 0.0;
   late final AnimationController _animationController;
-
+  
+  // Método para registrar el estado en el servidor backend
+  
   @override
   void initState() {
     super.initState();
