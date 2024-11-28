@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:intl/intl.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:baymind/frontend/widgets/colors.dart';
 import 'package:dialog_flowtter/dialog_flowtter.dart';
+import 'package:baymind/servicios/api_service.dart';
 
 class BaymindScreen extends StatefulWidget {
   const BaymindScreen({super.key});
@@ -15,7 +17,7 @@ class BaymindScreen extends StatefulWidget {
 
 class _BayMindScreen extends State<BaymindScreen> {
   final TextEditingController _textController = TextEditingController();
-  final List<Map<String, String>> _messages = [];
+  List<Map<String, dynamic>> _messages = [];
   bool _isListening = false;
   late stt.SpeechToText _speechToText;
   late DialogFlowtter dialogFlowtter;
@@ -24,29 +26,40 @@ class _BayMindScreen extends State<BaymindScreen> {
   void initState() {
     super.initState();
     _speechToText = stt.SpeechToText();
-    //DialogFlowtter.fromFile().then((instance) => dialogFlowtter = instance);
+    _loadMessages();
+    DialogFlowtter.fromFile().then((instance) => dialogFlowtter = instance);
   }
 
   void _sendMessage(String message) async {
-    if (message.trim().isEmpty) return;
+  if (message.trim().isEmpty) return;
+  // 1. Obtener la fecha y hora actual
+  String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
 
-    setState(() {
-      _messages.add({"sender": "user", "text": message});
-    });
-    _textController.clear();
+  // 2. Agregar el mensaje del usuario en la interfaz de usuario
+  setState(() {
+    _messages.add({"from": "user", "message": message,"date":formattedDate});
+  });
+  _textController.clear();
 
-    // Enviar el mensaje a Dialogflow
-    DetectIntentResponse response = await dialogFlowtter.detectIntent(
-      queryInput: QueryInput(text: TextInput(text: message)),
-    );
+  // 3. Enviar el mensaje a Dialogflow
+  DetectIntentResponse response = await dialogFlowtter.detectIntent(
+    queryInput: QueryInput(text: TextInput(text: message)),
+  );
 
-    if (response.message == null) return;
+  if (response.message == null) return;
 
-    // Añadir la respuesta de Dialogflow
-    setState(() {
-      _messages.add({"sender": "ai", "text": response.message!.text!.text![0]});
-    });
-  }
+  formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+  // 4. Agregar la respuesta de Dialogflow en la interfaz de usuario
+  setState(() {
+    _messages.add({"from": "ai", "message": response.message!.text!.text![0], "date":formattedDate});
+  });
+
+  // 5. Guardar el mensaje del usuario en la base de datos
+  await ApiService.guardarMensaje(formattedDate.toString(), "user", message);
+
+  // 6. Guardar la respuesta de Dialogflow en la base de datos
+  await ApiService.guardarMensaje(formattedDate.toString(), "ai", response.message!.text!.text![0]);
+}
 
   Future<void> _listen() async {
     if (!_isListening) {
@@ -66,28 +79,74 @@ class _BayMindScreen extends State<BaymindScreen> {
       _speechToText.stop();
     }
   }
+// Cargar los mensajes desde el backend
+  Future<void> _loadMessages() async {
+  final messages = await ApiService.obtenerMensajes();
 
-  Widget _buildMessage(String sender, String message) {
-    bool isUser = sender == "user";
-    return Align(
-      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-        decoration: BoxDecoration(
-          color: isUser ? AppColors.morado : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Text(
-          message,
-          style: TextStyle(
-            color: isUser ? Colors.white : Colors.black87,
-            fontSize: 16,
-          ),
-        ),
-      ),
-    );
+  // Asegurarnos de convertir la fecha de String a DateTime
+  for (var message in messages) {
+    if (message['date'] != null) {
+      message['date'] = DateTime.parse(message['date']);  // Convertir la fecha a DateTime
+    }
   }
+
+  // Ordenar los mensajes por fecha y hora
+  messages.sort((a, b) => a['date'].compareTo(b['date']));
+  
+// Convertir la fecha de vuelta a String después de ordenar
+  for (var message in messages) {
+    if (message['date'] != null) {
+      message['date'] = DateFormat('yyyy-MM-dd HH:mm:ss').format(message['date']);  // Convertir de DateTime a String
+    }
+  }
+  setState(() {
+    _messages = messages;
+  });
+}
+
+  // Función para construir los mensajes
+  Widget _buildMessage(String sender, String message, String dateTime) {
+    bool isUser = sender == "user";
+    // Convertir la fecha de String a DateTime
+  DateTime parsedDate = DateTime.parse(dateTime);
+    // Formatear la hora en formato HH:mm (hora y minutos)
+   String formattedTime = DateFormat('HH:mm').format(parsedDate);
+    return Align(
+    alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+    child: Container(
+      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+      decoration: BoxDecoration(
+        color: isUser ? const Color.fromARGB(255, 207, 101, 239) : Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // El mensaje
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: isUser ? Colors.white : Colors.black87,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          // Hora del mensaje en formato pequeño
+          Text(
+            formattedTime,
+            style: TextStyle(
+              color: isUser ? Colors.white70 : Colors.black54,
+              fontSize: 12, // Tamaño pequeño para la hora
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +188,7 @@ class _BayMindScreen extends State<BaymindScreen> {
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   final message = _messages[_messages.length - 1 - index];
-                  return _buildMessage(message["sender"]!, message["text"]!);
+                  return _buildMessage(message["from"]!, message["message"]!, message["date"]!);
                 },
               ),
             ),

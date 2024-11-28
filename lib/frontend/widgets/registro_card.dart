@@ -2,6 +2,7 @@ import 'package:baymind/frontend/pantallas/estado_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:baymind/frontend/widgets/colors.dart';
 import 'package:baymind/servicios/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegistroCard extends StatelessWidget {
   final String dayName;
@@ -20,13 +21,37 @@ class RegistroCard extends StatelessWidget {
   Future<String> obtenerDatos() async {
     // Aquí llamas a tu API o servicio para obtener la frase
     try {
-      // Supongamos que tienes una función en api_service.dart que obtiene la frase
-      String estadoanimo = await ApiService.obtenerDatosTarjeta(dayName, month);
-      return estadoanimo;
-    } catch (error) {
-      String estadoanimo = "Sin registro";
-      return estadoanimo;
-    }
+  // Mapa que asocia el nombre del mes con su número
+  Map<String, String> months = {
+    "Ene": "1",
+    "Feb": "2",
+    "Mar": "3",
+    "Abr": "4",
+    "May": "5",
+    "Jun": "6",
+    "Jul": "7",
+    "Ago": "8",
+    "Sep": "9",
+    "Oct": "10",
+    "Nov": "11",
+    "Dic": "12",
+  };
+
+  // Convertir el nombre del mes en número
+  String monthNumber = months[month] ?? "0"; // Si no se encuentra, devuelve 0
+
+  if (monthNumber == "0") {
+    throw Exception("Mes inválido");
+  }
+
+  // Supongamos que tienes una función en api_service.dart que obtiene la frase
+  String estadoanimo = await ApiService.obtenerDatosTarjeta(dayNumber, monthNumber);
+  return estadoanimo;
+} catch (error) {
+  String estadoanimo = "Sin registro";
+  return estadoanimo;
+}
+
   }
 
   List<Color> _getGradientColors(String estado) {
@@ -152,15 +177,18 @@ class RegistroCard extends StatelessWidget {
             // Parte del medio - "Sin registro"
             Flexible(
               child: FutureBuilder<String>(
-                future: obtenerDatos(), // Llamada a tu función que devuelve Future<String>
+                future:
+                    obtenerDatos(), // Llamada a tu función que devuelve Future<String>
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     // Indicador de carga mientras se obtienen los datos
                     return Container(
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color.fromARGB(100, 202, 163, 214),
-          Color.fromARGB(100, 50, 151, 245)], // Placeholder mientras carga
+                          colors: [
+                            Color.fromARGB(100, 202, 163, 214),
+                            Color.fromARGB(100, 50, 151, 245)
+                          ], // Placeholder mientras carga
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -197,7 +225,8 @@ class RegistroCard extends StatelessWidget {
                     return Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: _getGradientColors(snapshot.data!), // Aquí pasas el dato
+                          colors: _getGradientColors(
+                              snapshot.data!), // Aquí pasas el dato
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),

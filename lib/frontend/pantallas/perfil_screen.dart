@@ -16,6 +16,11 @@ class PerfilScreen extends StatefulWidget {
   _PerfilScreenState createState() => _PerfilScreenState();
 }
 
+Future<void> saveToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('email', ''); // Guarda el token con la clave 'authToken'
+}
+
 class _PerfilScreenState extends State<PerfilScreen> {
   DateTime dateTime = DateTime.now(); // Sumar un día a la fecha actual
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -174,6 +179,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 context,
                 MaterialPageRoute(builder: (context) => const ScrollScreen()),
               );
+              saveToken();
             },
             child: const Text("Salir"),
           ),

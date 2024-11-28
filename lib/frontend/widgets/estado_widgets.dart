@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:animated_background/animated_background.dart';
 import 'package:baymind/servicios/notification_services.dart';
 import 'package:baymind/servicios/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EstadoCard extends StatefulWidget {
   final List<Color> gradientColors;
@@ -15,44 +16,47 @@ class EstadoCard extends StatefulWidget {
   final String dayNumber;
   final String month;
 
-  const EstadoCard({
-    super.key,
-    required this.gradientColors,
-    required this.borderColor,
-    required this.moodText,
-    required this.buttonColor,
-    required this.animatedColor,
-    required this.animado,
-    required this.progress,
-    required this.onSliderChanged,
-    required this.dayNumber,
-    required this.month
-  });
+  const EstadoCard(
+      {super.key,
+      required this.gradientColors,
+      required this.borderColor,
+      required this.moodText,
+      required this.buttonColor,
+      required this.animatedColor,
+      required this.animado,
+      required this.progress,
+      required this.onSliderChanged,
+      required this.dayNumber,
+      required this.month});
 
   @override
   // ignore: library_private_types_in_public_api
   _EstadoCardState createState() => _EstadoCardState();
 }
 
+Future<String?> getToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('email'); // Recupera el token con la clave 'authToken'
+}
+
 class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
   late AnimatedBackground controller;
-
 
   @override
   Widget build(BuildContext context) {
     final particleOptions = ParticleOptions(
-     image: Image.network(''),
-     baseColor: widget.animatedColor,
-     spawnOpacity: 0.0,
-     opacityChangeRate: 0.25,
-     minOpacity: 0.9,
-     maxOpacity: 1.0,
-     spawnMinSpeed: widget.animado[0],
-     spawnMaxSpeed: widget.animado[1],
-     spawnMinRadius: widget.animado[2],
-     spawnMaxRadius: widget.animado[3],
-     particleCount: widget.animado[4].toInt(),
-   );
+      image: Image.network(''),
+      baseColor: widget.animatedColor,
+      spawnOpacity: 0.0,
+      opacityChangeRate: 0.25,
+      minOpacity: 0.9,
+      maxOpacity: 1.0,
+      spawnMinSpeed: widget.animado[0],
+      spawnMaxSpeed: widget.animado[1],
+      spawnMinRadius: widget.animado[2],
+      spawnMaxRadius: widget.animado[3],
+      particleCount: widget.animado[4].toInt(),
+    );
     return Container(
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
@@ -72,9 +76,7 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
           // Fondo animado de lluvia
           Positioned.fill(
             child: AnimatedBackground(
-              behaviour:RandomParticleBehaviour(
-                options: particleOptions
-              ),
+              behaviour: RandomParticleBehaviour(options: particleOptions),
               vsync: this,
               child: Container(),
             ),
@@ -147,8 +149,10 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
                   inactiveTrackColor: Colors.grey[300],
                   thumbColor: Colors.white,
                   overlayColor: Colors.white.withOpacity(0.2),
-                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 24.0),
+                  thumbShape:
+                      const RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                  overlayShape:
+                      const RoundSliderOverlayShape(overlayRadius: 24.0),
                 ),
                 child: Slider(
                   value: widget.progress,
@@ -161,8 +165,9 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
                 child: ElevatedButton(
                   onPressed: () async {
                     mostrarNotificacion();
-                    final String userId= await ApiService.obtenerUserId();
-                    await  ApiService.enviarDatos(widget.dayNumber, widget.month, widget.moodText, userId);
+                   
+                    await ApiService.enviarDatos(widget.dayNumber, widget.month,
+                        widget.moodText);
                     // ignore: use_build_context_synchronously
                     Navigator.pop(context);
                   },
@@ -171,7 +176,8 @@ class _EstadoCardState extends State<EstadoCard> with TickerProviderStateMixin {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 15),
                   ),
                   child: const Text(
                     "Registrar",

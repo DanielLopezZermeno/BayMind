@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 
-const urlApi ="https://baymind-backend.onrender.com/api/auth";
+const urlApi ="https://baymind-backend-yyfm.onrender.com/api/auth/";
 
 class CuestionarioScreen extends StatefulWidget {
   const CuestionarioScreen({super.key});
@@ -30,7 +30,7 @@ class _CuestionarioScreenState extends State<CuestionarioScreen> {
 
 Future<String?> getToken() async {
   final prefs = await SharedPreferences.getInstance();
-  return prefs.getString('authToken'); // Recupera el token con la clave 'authToken'
+  return prefs.getString('email'); // Recupera el token con la clave 'authToken'
 }
 
 
@@ -41,14 +41,15 @@ Future<void> sendDataToServer({
   required bool isWorking,
   required bool isStudying,
   required String appUsageReason,
+  required bool hasTherapy,
   required BuildContext context,
 }) async {
   // Crear el objeto con las respuestas
  String? yourToken = await getToken();
 if (yourToken == null) {
-  print("Token no encontrado.");
+  print("Usuario no encontrado.");
 } else {
-  print("Token obtenido: $yourToken");
+  print("Usuario obtenido: $yourToken");
 }
 
   Map<String, dynamic> answers = {
@@ -61,6 +62,7 @@ if (yourToken == null) {
   };
 
   Map<String, dynamic> body = {
+    'email': '$yourToken',
     'answers': answers,
   };
 
@@ -70,10 +72,6 @@ if (yourToken == null) {
       var response = await http.post(
         
         Uri.parse('$urlApi/answers'), // Cambia a la URL de tu API
-        headers: {
-          'Authorization': 'Bearer $yourToken',  // Asegúrate de incluir el token si es necesario
-          'Content-Type': 'application/json',
-        },
         body: jsonEncode(body),
       );
       print (body);
@@ -306,6 +304,7 @@ if (yourToken == null) {
                           isWorking: isWorking,
                           isStudying: isStudying,
                           appUsageReason: appUsageReason,
+                          hasTherapy: hasTherapy,
                           context: context, // Cambiar a MainScreen
                         );
                       }

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'package:baymind/frontend/pantallas/cuestionario_screen.dart';
 import 'package:baymind/main.dart';
@@ -7,7 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 
-final String apiUrl ="https://baymind-backend.onrender.com/api/auth";
+final String apiUrl ="https://baymind-backend-yyfm.onrender.com/api/auth/";
 
 class ScrollScreen extends StatelessWidget {
   const ScrollScreen({super.key});
@@ -81,9 +83,9 @@ class Background extends StatelessWidget {
   }
 }
 
-Future<void> saveToken(String token) async {
+Future<void> saveToken(String userName) async {
   final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('authToken', token); // Guarda el token con la clave 'authToken'
+  await prefs.setString('email', userName); // Guarda el token con la clave 'authToken'
 }
 
 
@@ -125,11 +127,9 @@ Future<void> _login(String email, String password) async {
         print ("Respuesta exitosa: ${response.body}");
         if (responseData['error'] == null) {
           // Login exitoso,
-          String token = responseData['data']['token'];
-          String userId = responseData['data']['user']['id'];
-          String userName = responseData['data']['user']['name'];
+          String userName = responseData['data']['user']['email'];
 
-          saveToken(token);
+          saveToken(userName);
 
           // redirigir a la pantalla principal
           Navigator.pushReplacement(
@@ -153,14 +153,14 @@ Future<void> _login(String email, String password) async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Error'),
+        title: const Text('Error'),
         content: Text(message),
         actions: <Widget>[
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text('Aceptar'),
+            child: const Text('Aceptar'),
           ),
         ],
       ),
@@ -405,12 +405,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         // Error en el registro
         final responseData = json.decode(response.body);
         String errorMessage = responseData['error'] ?? 'Error al registrar';
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al registrar')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error al registrar')));
       }
     } catch (error) {
       // En caso de error en la solicitud HTTP
         print("Error al realizar la solicitud: $error");
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error de conexión')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error de conexión')));
     }
     }
   }

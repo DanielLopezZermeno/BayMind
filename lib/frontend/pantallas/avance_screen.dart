@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 class MoodLineChart extends StatefulWidget {
   final String
       chartType; // Agregamos este parámetro para decidir el tipo de gráfico
-  final String usuario; // Usuario
   final int? primerDia; // Primer día (solo para "days")
   final int? primerMes; // Primer mes (solo para "days")
   final int? ultimoDia; // Último día (solo para "days")
@@ -18,7 +17,6 @@ class MoodLineChart extends StatefulWidget {
   const MoodLineChart({
     super.key,
     required this.chartType,
-    required this.usuario,
     this.primerDia,
     this.primerMes,
     this.ultimoDia,
@@ -35,44 +33,45 @@ class MoodLineChart extends StatefulWidget {
 }
 
 class _MoodLineChartState extends State<MoodLineChart> {
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<LineChartBarData>>(
-      future: ApiService.obtenerDatosLineChart(
-        widget.chartType,
-        usuario: widget.usuario,
-        primerDia: widget.primerDia,
-        primerMes: widget.primerMes,
-        ultimoDia: widget.ultimoDia,
-        ultimoMes: widget.ultimoMes,
-        dia: widget.dia,
-        mes: widget.mes,
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return const Center(child: Text("Error al cargar los datos"));
-        } else if (snapshot.hasData) {
-          final lineData = snapshot.data!;
-
-          return LineChart(
-            LineChartData(
-              gridData: const FlGridData(show: false),
-              borderData: FlBorderData(show: false),
-              titlesData: getTitlesData(
-                  widget.chartType), // Usamos el tipo de gráfico proporcionado
-              lineBarsData: lineData,
-              lineTouchData: lineTouchData,
-              minY: 0,
-              maxY: 5,
+          return FutureBuilder<List<LineChartBarData>>(
+            future: ApiService.obtenerDatosLineChart(
+              widget.chartType,
+              primerDia: widget.primerDia,
+              primerMes: widget.primerMes,
+              ultimoDia: widget.ultimoDia,
+              ultimoMes: widget.ultimoMes,
+              dia: widget.dia,
+              mes: widget.mes,
             ),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return const Center(child: Text("Error al cargar los datos"));
+              } else if (snapshot.hasData) {
+                final lineData = snapshot.data!;
+
+                return LineChart(
+                  LineChartData(
+                    gridData: const FlGridData(show: false),
+                    borderData: FlBorderData(show: false),
+                    titlesData: getTitlesData(widget
+                        .chartType), // Usamos el tipo de gráfico proporcionado
+                    lineBarsData: lineData,
+                    lineTouchData: lineTouchData,
+                    minY: 0,
+                    maxY: 5,
+                  ),
+                );
+              } else {
+                return const Center(child: Text("No hay datos disponibles"));
+              }
+            },
           );
-        } else {
-          return const Center(child: Text("No hay datos disponibles"));
-        }
-      },
-    );
+
   }
 
   // Datos de interacción al tocar las líneas
@@ -211,10 +210,8 @@ class _AvanceScreenState extends State<AvanceScreen>
         startOfThisWeek.subtract(const Duration(days: 7));
 
     // Inicio de hace dos semanas
-    final DateTime startOfTwoWeeksAgo =
-        startOfLastWeek.subtract(const Duration(days: 28));
+    startOfLastWeek.subtract(const Duration(days: 28));
 
-    final DateTime sixMonthsAgo = DateTime(today.year, today.month - 6);
     return Scaffold(
       appBar: AppBar(
         title: const Text('¡Es un gran progreso!',
@@ -286,7 +283,7 @@ class _AvanceScreenState extends State<AvanceScreen>
                     ],
                   ),
                   child: MoodLineChart(
-                    chartType: 'days', usuario: 'usuario123', // Usuario actual
+                    chartType: 'days', // Usuario actual
                     primerDia: sevenDaysAgo.day,
                     primerMes: sevenDaysAgo.month,
                     ultimoDia: today.day,
@@ -327,9 +324,8 @@ class _AvanceScreenState extends State<AvanceScreen>
                   ),
                   child: MoodLineChart(
                     chartType: 'weeks',
-                    usuario: 'usuario123',
-                    dia: startOfTwoWeeksAgo.day,
-                    mes: startOfTwoWeeksAgo.month,
+                    dia: today.day,
+                    mes: today.month,
                   )),
             ),
             SizedBox(
@@ -366,9 +362,8 @@ class _AvanceScreenState extends State<AvanceScreen>
                   ),
                   child: MoodLineChart(
                     chartType: 'months',
-                    usuario: 'usuario123', // Usuario actual
                     dia: today.day, // Día actual
-                    mes: sixMonthsAgo.month, // Mes inicial (hace 6 meses)
+                    mes: today.month, // Mes inicial (hace 6 meses)
                   )),
             ),
           ],

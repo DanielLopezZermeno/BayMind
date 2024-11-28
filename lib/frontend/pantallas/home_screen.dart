@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:baymind/frontend/pantallas/estado_screen.dart';
 import 'package:baymind/main.dart';
 import 'package:baymind/servicios/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class MoodBarChart extends StatefulWidget {
@@ -13,15 +14,13 @@ class MoodBarChart extends StatefulWidget {
   // ignore: library_private_types_in_public_api
   _MoodBarChartState createState() => _MoodBarChartState();
 }
-
 class _MoodBarChartState extends State<MoodBarChart> {
   DateTime date= DateTime.now();
-  String usuario="";
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<BarChartGroupData>>(
       // Llamamos al método obtenerDatosBarChart desde ApiService
-      future: ApiService.obtenerDatosBarChart(usuario,date.day, date.month),
+      future: ApiService.obtenerDatosBarChart(date.day, date.month),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -48,6 +47,8 @@ class _MoodBarChartState extends State<MoodBarChart> {
       },
     );
   }
+  
+
 
   // Datos de interacción al tocar las barras
   BarTouchData get barTouchData => BarTouchData(
@@ -115,25 +116,25 @@ class _MoodBarChartState extends State<MoodBarChart> {
     String text;
     switch (value.toInt()) {
       case 0:
-        text = 'Lun';
+        text = 'Dom';
         break;
       case 1:
-        text = 'Mar';
+        text = 'Lun';
         break;
       case 2:
-        text = 'Mié';
+        text = 'Mar';
         break;
       case 3:
-        text = 'Jue';
+        text = 'Mié';
         break;
       case 4:
-        text = 'Vie';
+        text = 'Jue';
         break;
       case 5:
-        text = 'Sáb';
+        text = 'Vie';
         break;
       case 6:
-        text = 'Dom';
+        text = 'Sab';
         break;
       default:
         text = '';
@@ -188,6 +189,7 @@ class _HomeScreen extends State<HomeScreen>{
       obtenerFraseDelDia();
     }
   Future<void> obtenerFraseDelDia() async {
+    
     // Aquí llamas a tu API o servicio para obtener la frase
     try {
       // Supongamos que tienes una función en api_service.dart que obtiene la frase
@@ -480,6 +482,7 @@ class _HomeScreen extends State<HomeScreen>{
                         // Aquí iría el gráfico de barras.
                         SizedBox(height: 20),
                         Expanded(
+                          
                           child: MoodBarChart(),
                         ),
                       ],
